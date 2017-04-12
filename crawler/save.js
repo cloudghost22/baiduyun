@@ -8,13 +8,13 @@ let q = require('q');
 
 let pool = mysql.createPool(dbConfig);
 
-//获取未爬取的uk
+//获取未爬取的用户
 let getUser = function () {
     let deferred = q.defer();
     pool.getConnection((err, conn) => {
         "use strict";
         if (err) deferred.reject(err);
-        conn.query("select * from users where flag = 0 limit 1;", (err, result) => {
+        conn.query("select * from users where flag = 0 order by pubshareCount desc LIMIT 1;", (err, result) => {
             conn.release();
             deferred.resolve(result);
         });
@@ -64,6 +64,35 @@ let saveShare = function (data) {
     return deferred.promise;
 };
 
+//保存订阅用户数据
+let saveFollow=function (data) {
+    let deferred = q.defer();
+    let saveSql = 'insert into users(uk,userName,followCount,fansCount,pubShareCount) values';
+    let updateStr = '';
+    for (let i of data) {
+        let temp = '\'' + i.uk + '\',\'' + i.userName + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubShareCount + '\'';
+        temp = '(' + temp + ')';
+        if (updateStr) {
+            updateStr += ',' + temp;
+        } else {
+            updateStr += temp;
+        }
+    }
+    saveSql += updateStr + ';';
+    console.log(saveSql);
+    pool.getConnection((err, conn) => {
+        "use strict";
+        conn.release();
+        if (err) deferred.reject(err);
+        conn.query(saveSql, (err, result) => {
+            if (err) throw err;
+            deferred.resolve(result.affectedRows);
+        });
+    });
+    return deferred.promise;
+};
+
 module.exports.getUser = getUser;
 module.exports.saveShare = saveShare;
 module.exports.setShareFlag = setShareFlag;
+module.exports.saveFollow = saveFollow;
