@@ -1,0 +1,10 @@
+{
+  "name": "baiduyun",
+  "version": "0.0.1",
+  "mysql":{
+    "host":"localhost",
+    "user":"nodejs",
+    "password":"qaz123",
+    "database":"baiduyun"
+  }
+}
