@@ -1,0 +1,29 @@
+CREATE TABLE `users` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `uk` decimal(12,0) DEFAULT NULL,
+  `userName` varchar(255) DEFAULT NULL,
+  `followCount` int(11) DEFAULT NULL,
+  `fansCount` int(11) DEFAULT NULL,
+  `pubshareCount` int(11) DEFAULT NULL,
+  `shareFlag` tinyint(4) DEFAULT '0',
+  `followFlag` tinyint(4) DEFAULT '0',
+  `fansFlag` tinyint(4) DEFAULT '0',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=25639 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `share` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `category` tinyint(4) DEFAULT NULL,
+  `feed_time` decimal(13,0) DEFAULT NULL,
+  `isdir` tinyint(4) DEFAULT NULL,
+  `server_filename` varchar(1024) DEFAULT NULL,
+  `size` decimal(10,0) unsigned DEFAULT NULL,
+  `saveTime` decimal(13,0) DEFAULT NULL,
+  `shareid` decimal(11,0) DEFAULT NULL,
+  `shorturl` char(8) DEFAULT NULL,
+  `title` varchar(1024) DEFAULT NULL,
+  `uk` decimal(12,0) DEFAULT NULL,
+  `username` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
