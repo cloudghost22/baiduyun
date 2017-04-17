@@ -24,7 +24,8 @@ let options = {
     'Accept': 'application/json, text/javascript, */*; q=0.01',
     'Accept-Encoding': 'gzip, deflate, sdch, br',
     'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.6,en;q=0.4',
-    'Connection': 'keep-alive',
+    'Cache-Control':'no-cache',
+    'Connection': 'close',
     'Host': 'pan.baidu.com',
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
     'X-Requested-With': 'XMLHttpRequest'
@@ -35,7 +36,7 @@ let options = {
 //获取用户分享的信息
 let ShareWorker = function () {
 };
-
+let shareCounter = 0;
 ShareWorker.prototype = {
     init: function () {
         let deferred = q.defer();
@@ -43,23 +44,30 @@ ShareWorker.prototype = {
         getUser(0)
             .then((user) => {
                 if (user == '') {
-                    throw ('Get users share all done.');
+                    logger.trace('Get users share all done.Wating 5 min');
+                    sleeptime(300000);
+                    deferred.resolve(this.init());
                 }
                 if (user[0].pubshareCount == 0) {
                     //该用户无分享数据，递归
-                    console.log(`${user[0].uk} share is 0`);
+                    logger.trace(`${user[0].uk} share is 0`);
                     setShareFlag(user[0].uk, 0).then(() => {
                         deferred.resolve(this.init());
                     }).catch(err => callback(err, null));
                 } else {
                     //根据用户数据生成连接
-                    console.log('getShareTasks');
+                    logger.trace('getShareTasks');
                     let urls = getShareTasks(user[0].uk, user[0].pubshareCount);
                     async.mapLimit(urls, 1, (url, callback) => {
                         "use strict";
                         console.time('Get share wating');
-                        sleeptime(1000 + Math.round(Math.random() * 4000));
+                        sleeptime(1000 + Math.round(Math.random() * 2000));
                         console.timeEnd('Get share wating');
+                        if(++shareCounter == 9){
+                            logger.trace('Get share sleep 2min');
+                            sleeptime(100000);
+                            shareCounter = 0;
+                        }
                         getShare(url)
                             .then((shareDate) => {
                                 if (shareDate == 'err') {
@@ -76,14 +84,14 @@ ShareWorker.prototype = {
                     }, (err, result) => {
                         "use strict";
                         if (err) throw err;
-                        console.log(`${user[0].uk} get share is finish.`);
+                        logger.trace(`${user[0].uk} get share is finish.`);
                         setShareFlag(user[0].uk, 0).then(() => {
                             deferred.resolve(this.init());
                         }).catch(err => callback(err, null));
                     });
                 }
             })
-            .catch(err => console.log(err));
+            .catch(err => logger.trace(err));
         return deferred.promise;
     }
 };
@@ -92,42 +100,51 @@ ShareWorker.prototype = {
 let getShareTasks = function (uk, total) {
     let shareTasks = [];
     let _uk = uk,
-        _total = total,
+        _total = total>1860?1860:total,
         _pn = 0,
-        _url = '',
-        _timeStamp = (new Date()).valueOf();
+        _url = '';
     for (let i = 0; i < total; i += 60) {
-        _url = `https://pan.baidu.com/pcloud/feed/getsharelist?t=${_timeStamp}&category=0&auth_type=1&request_location=share_home&start=${_pn}&limit=60&query_uk=${_uk}&channel=chunlei&clienttype=0&web=1`;
+        _url = `https://pan.baidu.com/pcloud/feed/getsharelist?category=0&auth_type=1&request_location=share_home&start=${_pn}&limit=60&query_uk=${_uk}&channel=chunlei&clienttype=0&web=1&logid=MTQ5MjMyODAzMDQwOTAuMzg0MjYzMjc5NjYzNDc0Mg==&bdstoken=null`;
         shareTasks.push(_url);
         _pn += 60;
     }
-    return shareTasks;
+    return shuffle(shareTasks);
 };
 
 //获取分享数据
 let getShare = function (url) {
-    logger.trace(url);
     let deferred = q.defer();
+    let _timeStamp = (new Date()).valueOf();
+    let _url = url + `&t=${_timeStamp}`;
     let uk = url.slice(url.indexOf('query_uk=') + 9, url.indexOf('&channel'));
-    options.Referer = `https://pan.baidu.com/share/home?uk=${uk}`;
-    options.Cookie=`PANWEB=1; BAIDUID=5A7C09B80B0F8719481880EB58EB1B2F:FG=1; Hm_lvt_7a3960b6f067eb0085b7f96ff5e660b0=${Math.round(((new Date()).valueOf())/1000)}; Hm_lpvt_7a3960b6f067eb0085b7f96ff5e660b0=${Math.round(((new Date()).valueOf())/1000)}`;
+    options.Referer = `https://pan.baidu.com/share/home?uk=${uk}&third=1&view=share`;
+    logger.trace(_url);
+    // options.Cookie=`PANWEB=1; BAIDUID=5A7C09B80B0F8719481880EB58EB1B2F:FG=1; Hm_lvt_7a3960b6f067eb0085b7f96ff5e660b0=${Math.round(((new Date()).valueOf())/1000)}; Hm_lpvt_7a3960b6f067eb0085b7f96ff5e660b0=${Math.round(((new Date()).valueOf())/1000)}`;
     superagent
-        .get(url)
+        .get(_url)
         .set(options)
         .end((err, res) => {
             "use strict";
             if (err) deferred.reject(err);
-            let json = JSON.parse(res.text);
-            let jsonTemp = parseShareJson(json);
-            if (jsonTemp == 'err') {
-                console.log(`${url} request error.`);
-                setTimeout(() => {
-                    deferred.resolve('err');
-                }, 600000);
+            try {
+                // logger.trace(res.text);
+                let json = JSON.parse(res.text);
+                let jsonTemp = parseShareJson(json);
+                if (jsonTemp == 'err') {
+                    logger.trace(`${url} request error.`);
+                    setTimeout(() => {
+                        deferred.resolve('err');
+                    }, 600000);
 
-            } else {
-                deferred.resolve(jsonTemp);
+                } else {
+                    // console.log(jsonTemp);
+                    deferred.resolve(jsonTemp);
+                }
+            }catch (err){
+                logger.trace(err);
+                deferred.resolve('err');
             }
+
         });
     return deferred.promise;
 };
@@ -141,17 +158,22 @@ FollowWorker.prototype = {
         let deferred = q.defer();
         getUser(1).then((user) => {
             "use strict";
+            if (user == '') {
+                logger.trace('Get users follow all done.Wating 5 min');
+                sleeptime(300000);
+                deferred.resolve(this.init());
+            }
             if (user[0].followCount == 0) {
                 //该用户无订阅数据，递归
-                console.log(`${user[0].uk} follow is 0`);
+                logger.trace(`${user[0].uk} follow is 0`);
                 setShareFlag(user[0].uk, 1)
                     .then(() => {
                         deferred.resolve(this.init());
                     })
-                    .catch(err => console.log(err));
+                    .catch(err => logger.trace(err));
             } else {
                 //根据用户数据生成连接
-                console.log('getFollowTasks');
+                logger.trace('getFollowTasks');
                 let urls = getFollowTasks(user[0].uk, user[0].followCount);
                 // console.log(urls);
                 async.mapLimit(urls, 1, (url, callback) => {
@@ -161,7 +183,7 @@ FollowWorker.prototype = {
                     console.timeEnd('Get follow wating');
                     getFollow(url)
                         .then((followDate) => {
-                            console.log('saveFollow');
+                            logger.trace('saveFollow');
                             if (followDate == 'err') {
                                 callback(null, null);
                             } else {
@@ -177,14 +199,14 @@ FollowWorker.prototype = {
                     if (err) throw err;
                     setShareFlag(user[0].uk, 1)
                         .then(() => {
-                            console.log(`${user[0].uk} get follow is finish.`);
+                            logger.trace(`${user[0].uk} get follow is finish.`);
                             deferred.resolve(this.init());
                         })
-                        .catch(err => console.log(err));
+                        .catch(err => logger.trace(err));
 
                 });
             }
-        }).catch(err => console.log(err));
+        }).catch(err => logger.trace(err));
 
     }
 };
@@ -216,17 +238,25 @@ let getFollow = function (url) {
         .end((err, res) => {
             "use strict";
             if (err) deferred.reject(err);
-            let json = JSON.parse(res.text);
-            let jsonTemp = parseFollowJson(json);
-            if (jsonTemp == 'err') {
-                console.log(`${url} request error.`);
+            try {
+                let json = JSON.parse(res.text);
+                let jsonTemp = parseFollowJson(json);
+                if (jsonTemp == 'err') {
+                    logger.trace(`${url} request error.`);
+                    setTimeout(() => {
+                        deferred.resolve('err');
+                    }, 600000);
+
+                } else {
+                    deferred.resolve(jsonTemp);
+                }
+            }catch(err){
+                logger.trace(err);
                 setTimeout(() => {
                     deferred.resolve('err');
                 }, 600000);
-
-            } else {
-                deferred.resolve(jsonTemp);
             }
+
         });
     return deferred.promise;
 };
@@ -240,12 +270,17 @@ FansWorker.prototype = {
         let deferred = q.defer();
         getUser(2).then((user) => {
             "use strict";
+            if (user == '') {
+                logger.trace('Get users fans all done.Wating 5 min');
+                sleeptime(300000);
+                deferred.resolve(this.init());
+            }
             if (user[0].fansCount == 0) {
                 //该用户无订阅数据，递归
-                console.log(`${user[0].uk} fans is 0`);
+                logger.trace(`${user[0].uk} fans is 0`);
                 setShareFlag(user[0].uk, 2).then(() => {
                     deferred.resolve(this.init());
-                }).catch(err => console.log(err));
+                }).catch(err => logger.trace(err));
 
             } else {
                 //根据用户数据生成连接
@@ -255,7 +290,6 @@ FansWorker.prototype = {
                     console.time('Get fans wating');
                     sleeptime(500 + Math.round(Math.random() * 1000));
                     console.timeEnd('Get fans wating');
-                    // console.log(url);
                     getFans(url)
                         .then((fansDate) => {
                             // console.log(fansDate);
@@ -273,14 +307,14 @@ FansWorker.prototype = {
                 }, (err, result) => {
                     "use strict";
                     if (err) throw err;
-                    console.log(`${user[0].uk} get fans is finish.`);
+                    logger.trace(`${user[0].uk} get fans is finish.`);
                     setShareFlag(user[0].uk, 2).then(() => {
                         deferred.resolve(this.init());
-                    }).catch(err => console.log(err));
+                    }).catch(err => logger.trace(err));
 
                 });
             }
-        }).catch(err => console.log(err));
+        }).catch(err => logger.trace(err));
 
     }
 };
@@ -312,18 +346,23 @@ let getFans = function (url) {
         .end((err, res) => {
             "use strict";
             if (err) deferred.reject(err);
-            let json = JSON.parse(res.text);
-            let jsonTemp = parseFansJson(json);
-            if (jsonTemp == 'err') {
-                console.log(`${url} request error.`);
-                logger.trace(`${url} request error.`);
-                setTimeout(() => {
-                    deferred.resolve('err');
-                }, 600000);
+            try {
+                let json = JSON.parse(res.text);
+                let jsonTemp = parseFansJson(json);
+                if (jsonTemp == 'err') {
+                    logger.trace(`${url} request error.`);
+                    setTimeout(() => {
+                        deferred.resolve('err');
+                    }, 600000);
 
-            } else {
-                deferred.resolve(jsonTemp);
+                } else {
+                    deferred.resolve(jsonTemp);
+                }
+            }catch (err){
+                logger.trace(err);
+                deferred.resolve('err');
             }
+
         });
     return deferred.promise;
 };

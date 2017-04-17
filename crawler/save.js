@@ -33,6 +33,7 @@ let setShareFlag = function (uk,flag=0) {
     pool.getConnection((err, conn) => {
         "use strict";
         if (err) deferred.reject(err);
+        // console.log(`update users set ${flagArr[flag]} = 1 where uk = '${uk}';`);
         conn.query(`update users set ${flagArr[flag]} = 1 where uk = '${uk}';`, (err, result) => {
             conn.release();
             if (err) deferred.reject(err);
@@ -48,7 +49,7 @@ let saveShare = function (data) {
     let saveSql = 'INSERT share(category,feed_time,isdir,server_filename,size,saveTime,shareid,shorturl,title,uk,username) VALUES ';
     let updateStr = '';
     for (let i of data) {
-        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + i.server_filename.replace(/\'/g,'\\\'') + '\',\'' + i.size + '\',\'' + i.saveTime + '\',\'' + i.shareid + '\',\'' + i.shorturl + '\',\'' + i.title.replace(/\'/g,'\\\'') + '\',\'' + i.uk + '\',\'' + i.username.replace(/\'/g,'\\\'') + '\'';
+        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\'/g,'\\\'')).substr(0,512) + '\',\'' + i.size + '\',\'' + i.saveTime + '\',\'' + i.shareid + '\',\'' + i.shorturl + '\',\'' + (i.title.replace(/\'/g,'\\\'')).substr(0,512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\'/g,'\\\'') + '\'';
         temp = '(' + temp + ')';
         if (updateStr) {
             updateStr += ',' + temp;
@@ -58,7 +59,36 @@ let saveShare = function (data) {
         // console.log(temp);
     }
     saveSql += updateStr + ';';
+    // console.log(saveSql);
+    pool.getConnection((err, conn) => {
+        "use strict";
+        conn.release();
+        if (err) deferred.reject(err);
+        conn.query(saveSql, (err, result) => {
+            if (err) throw err;
+            deferred.resolve(result.affectedRows);
+        });
+    });
+    return deferred.promise;
+};
 
+let saveWapShare = function (data) {
+    let deferred = q.defer();
+    let saveSql = 'INSERT share(category,feed_time,isdir,server_filename,size,saveTime,shareid,title,uk,username) VALUES ';
+    let updateStr = '';
+    let _saveTime = (new Date()).valueOf();
+    for (let i of data) {
+        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\'/g,'\\\'')).substr(0,512) + '\',\'' + i.size + '\',\'' + _saveTime + '\',\'' + i.shareid + '\',\'' + (i.title.replace(/\'/g,'\\\'')).substr(0,512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\'/g,'\\\'') + '\'';
+        temp = '(' + temp + ')';
+        if (updateStr) {
+            updateStr += ',' + temp;
+        } else {
+            updateStr += temp;
+        }
+        // console.log(temp);
+    }
+    saveSql += updateStr + ';';
+    console.log(saveSql);
     pool.getConnection((err, conn) => {
         "use strict";
         conn.release();
@@ -77,7 +107,7 @@ let saveFollow=function (data) {
     let saveSql = 'insert into users(uk,userName,followCount,fansCount,pubShareCount) values';
     let updateStr = '';
     for (let i of data) {
-        let temp = '\'' + i.uk + '\',\'' + i.userName.replace(/\'/g,'\\\'') + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';
+        let temp = '\'' + i.uk + '\',\'' + (i.userName.replace(/\'/g,'\\\'')).substr(0,255) + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';
         temp = '(' + temp + ')';
         if (updateStr) {
             updateStr += ',' + temp;
@@ -105,7 +135,7 @@ let saveFans=function (data) {
     let saveSql = 'insert into users(uk,userName,followCount,fansCount,pubShareCount) values';
     let updateStr = '';
     for (let i of data) {
-        let temp = '\'' + i.uk + '\',\'' + i.userName.replace(/\'/g,'\\\'') + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';
+        let temp = '\'' + i.uk + '\',\'' + (i.userName.replace(/\'/g,'\\\'')).substr(0,512) + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';
         temp = '(' + temp + ')';
         if (updateStr) {
             updateStr += ',' + temp;
@@ -132,3 +162,4 @@ module.exports.saveShare = saveShare;
 module.exports.setShareFlag = setShareFlag;
 module.exports.saveFollow = saveFollow;
 module.exports.saveFans = saveFans;
+module.exports.saveWapShare = saveWapShare;

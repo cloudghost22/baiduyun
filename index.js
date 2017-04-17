@@ -3,11 +3,11 @@
  */
 
 let async = require('async');
-let q = require('q');
-let sleeptime = require('sleep-time');
+/*let q = require('q');
+let sleeptime = require('sleep-time');*/
 let FollowWorker = require('./crawler/fetch').FollowWorker;
 let FansWorker = require('./crawler/fetch').FansWorker;
-let ShareWorker = require('./crawler/fetch').ShareWorker;
+/*let ShareWorker = require('./crawler/fetch').ShareWorker;
 let getUser = require('./crawler/save').getUser;
 let saveShare = require('./crawler/save').saveShare;
 let saveFollow = require('./crawler/save').saveFollow;
@@ -20,16 +20,22 @@ let setShareFlag = require('./crawler/save').setShareFlag;
 let getFollowTasks = require('./crawler/fetch').getFollowTasks;
 let getShareTasks = require('./crawler/fetch').getShareTasks;
 let getFansTasks = require('./crawler/fetch').getFansTasks;
+let getWapShare = require('./crawler/wapFetch').getWapShare;*/
+let WapShareWorker = require('./crawler/wapFetch').WapShareWorker;
 
+/*let wapShareWorker = new WapShareWorker();
+wapShareWorker.init();*/
 
-let shareWorker = new ShareWorker();
+// getWapShare('https://pan.baidu.com/wap/share/home?uk=608138975');
+
+let wapShareWorker = new WapShareWorker();
 let followWorker = new FollowWorker();
 let fansWorker = new FansWorker();
 
 
 async.parallel([
     function () {
-        shareWorker.init();
+        wapShareWorker.init();
     },
     function () {
         followWorker.init();
