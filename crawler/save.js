@@ -9,15 +9,20 @@ let q = require('q');
 let pool = mysql.createPool(dbConfig);
 
 //获取未爬取的用户
-let getUser = function (flag=0) {
+let getUser = function (flag = 0) {
     //flag 0:pubshareCount 1:followCount 2:fansCount
-    let arr = ['pubshareCount','followCount','fansCount'];
-    let flagArr = ['shareFlag','followFlag','fansFlag'];
+    let arr = ['pubshareCount', 'followCount', 'fansCount'];
+    let flagArr = ['shareFlag', 'followFlag', 'fansFlag'];
+    let queryStr = [
+        `select * from users where shareFlag = 0 and not EXISTS(select 1 from v_fetcheduser where v_fetcheduser.uk = users.uk) order by pubshareCount desc LIMIT 1;`,
+        `select * from users where followFlag = 0 and not EXISTS(select 1 from v_followeduser where v_followeduser.uk = users.uk) order by followCount desc LIMIT 1;`,
+        `select * from users where fansFlag = 0 and not EXISTS(select 1 from v_fanseduser where v_fanseduser.uk = users.uk) order by fansCount desc LIMIT 1;`
+    ];
     let deferred = q.defer();
     pool.getConnection((err, conn) => {
         "use strict";
         if (err) deferred.reject(err);
-        conn.query(`select * from users where ${flagArr[flag]} = 0 order by ${arr[flag]} desc LIMIT 1;`, (err, result) => {
+        conn.query(queryStr[flag], (err, result) => {
             conn.release();
             deferred.resolve(result);
         });
@@ -26,10 +31,10 @@ let getUser = function (flag=0) {
 };
 
 //修改状态为已爬取
-let setShareFlag = function (uk,flag=0) {
+let setShareFlag = function (uk, flag = 0) {
     //flag 1:pubshareCount 2:followCount 4:fansCount
     let deferred = q.defer();
-    let flagArr = ['shareFlag','followFlag','fansFlag'];
+    let flagArr = ['shareFlag', 'followFlag', 'fansFlag'];
     pool.getConnection((err, conn) => {
         "use strict";
         if (err) deferred.reject(err);
@@ -49,7 +54,7 @@ let saveShare = function (data) {
     let saveSql = 'INSERT share(category,feed_time,isdir,server_filename,size,saveTime,shareid,shorturl,title,uk,username) VALUES ';
     let updateStr = '';
     for (let i of data) {
-        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\'/g,'\\\'')).substr(0,512) + '\',\'' + i.size + '\',\'' + i.saveTime + '\',\'' + i.shareid + '\',\'' + i.shorturl + '\',\'' + (i.title.replace(/\'/g,'\\\'')).substr(0,512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\'/g,'\\\'') + '\'';
+        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\'/g, '\\\'')).substr(0, 512) + '\',\'' + i.size + '\',\'' + i.saveTime + '\',\'' + i.shareid + '\',\'' + i.shorturl + '\',\'' + (i.title.replace(/\'/g, '\\\'')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\'/g, '\\\'') + '\'';
         temp = '(' + temp + ')';
         if (updateStr) {
             updateStr += ',' + temp;
@@ -78,7 +83,7 @@ let saveWapShare = function (data) {
     let updateStr = '';
     let _saveTime = (new Date()).valueOf();
     for (let i of data) {
-        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\'/g,'\\\'')).substr(0,512) + '\',\'' + i.size + '\',\'' + _saveTime + '\',\'' + i.shareid + '\',\'' + (i.title.replace(/\'/g,'\\\'')).substr(0,512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\'/g,'\\\'') + '\'';
+        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\'/g, '\\\'')).substr(0, 512) + '\',\'' + i.size + '\',\'' + _saveTime + '\',\'' + i.shareid + '\',\'' + (i.title.replace(/\'/g, '\\\'')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\'/g, '\\\'') + '\'';
         temp = '(' + temp + ')';
         if (updateStr) {
             updateStr += ',' + temp;
@@ -88,7 +93,7 @@ let saveWapShare = function (data) {
         // console.log(temp);
     }
     saveSql += updateStr + ';';
-    console.log(saveSql);
+    // console.log(saveSql);
     pool.getConnection((err, conn) => {
         "use strict";
         conn.release();
@@ -102,12 +107,12 @@ let saveWapShare = function (data) {
 };
 
 //保存订阅用户数据
-let saveFollow=function (data) {
+let saveFollow = function (data) {
     let deferred = q.defer();
     let saveSql = 'insert into users(uk,userName,followCount,fansCount,pubShareCount) values';
     let updateStr = '';
     for (let i of data) {
-        let temp = '\'' + i.uk + '\',\'' + (i.userName.replace(/\'/g,'\\\'')).substr(0,255) + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';
+        let temp = '\'' + i.uk + '\',\'' + (i.userName.replace(/\'/g, '\\\'')).substr(0, 255) + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';
         temp = '(' + temp + ')';
         if (updateStr) {
             updateStr += ',' + temp;
@@ -130,12 +135,12 @@ let saveFollow=function (data) {
 };
 
 //保存fans用户数据
-let saveFans=function (data) {
+let saveFans = function (data) {
     let deferred = q.defer();
     let saveSql = 'insert into users(uk,userName,followCount,fansCount,pubShareCount) values';
     let updateStr = '';
     for (let i of data) {
-        let temp = '\'' + i.uk + '\',\'' + (i.userName.replace(/\'/g,'\\\'')).substr(0,512) + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';
+        let temp = '\'' + i.uk + '\',\'' + (i.userName.replace(/\'/g, '\\\'')).substr(0, 512) + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';
         temp = '(' + temp + ')';
         if (updateStr) {
             updateStr += ',' + temp;

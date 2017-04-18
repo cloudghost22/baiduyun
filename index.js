@@ -20,8 +20,17 @@ let setShareFlag = require('./crawler/save').setShareFlag;
 let getFollowTasks = require('./crawler/fetch').getFollowTasks;
 let getShareTasks = require('./crawler/fetch').getShareTasks;
 let getFansTasks = require('./crawler/fetch').getFansTasks;
+let saveWapShare = require('./crawler/save').saveWapShare;
 let getWapShare = require('./crawler/wapFetch').getWapShare;*/
 let WapShareWorker = require('./crawler/wapFetch').WapShareWorker;
+
+/*
+getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=37088592&start=3860')
+    .then((data)=>{
+        console.log(data);
+        saveWapShare(data);
+    });
+*/
 
 /*let wapShareWorker = new WapShareWorker();
 wapShareWorker.init();*/
