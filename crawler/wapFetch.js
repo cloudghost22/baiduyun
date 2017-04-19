@@ -41,7 +41,10 @@ let getWapShare = function (url) {
         .set(options)
         .end((err, res) => {
             "use strict";
-            if (err) deferred.reject(err);
+            if (err) {
+                console.log('error url is:' + url);
+                deferred.resolve('err');
+            }
             try {
                 // console.log(res.text);
                 let $ = cheerio.load(res.text);
@@ -52,7 +55,8 @@ let getWapShare = function (url) {
                 // console.log(temp.feedata.records[0]);
                 deferred.resolve(parseWapShareJson(temp.feedata));
             } catch (e) {
-                console.log(e);
+                console.log('error url is:' + url);
+                // console.log(e);
                 deferred.resolve('err');
             }
         });
