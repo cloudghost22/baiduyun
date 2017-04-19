@@ -167,7 +167,7 @@ let errorUrl = function (urls) {
     let saveSql = 'INSERT into errorurls(url) VALUES ';
     let updateStr = '';
     for (let i of urls) {
-        let temp = '\''+i+'\'';
+        let temp = '\''+i.substr(0, 512)+'\'';
         temp = '(' + temp + ')';
         if (updateStr) {
             updateStr += ',' + temp;

@@ -55,7 +55,7 @@ let getWapShare = function (url) {
             }
             try {
                 // console.log(res.text);
-                let $ = cheerio.load(res1.text);
+                let $ = cheerio.load(res.text);
                 let temp = $('script')[16].children[0].data;
                 temp = temp.replace(/ /g, '');
                 temp = temp.substring(temp.indexOf('{"'), temp.indexOf('}();') - 2);
