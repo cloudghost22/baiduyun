@@ -162,9 +162,37 @@ let saveFans = function (data) {
     return deferred.promise;
 };
 
+let errorUrl = function (urls) {
+    let deferred = q.defer();
+    let saveSql = 'INSERT into errorurls(url) VALUES ';
+    let updateStr = '';
+    for (let i of urls) {
+        let temp = '\''+i+'\'';
+        temp = '(' + temp + ')';
+        if (updateStr) {
+            updateStr += ',' + temp;
+        } else {
+            updateStr += temp;
+        }
+    }
+    saveSql += updateStr + ';';
+    // console.log(saveSql);
+    pool.getConnection((err, conn) => {
+        "use strict";
+        conn.release();
+        if (err) deferred.reject(err);
+        conn.query(saveSql, (err, result) => {
+            if (err) throw err;
+            deferred.resolve(result.affectedRows);
+        });
+    });
+    return deferred.promise;
+};
+
 module.exports.getUser = getUser;
 module.exports.saveShare = saveShare;
 module.exports.setShareFlag = setShareFlag;
 module.exports.saveFollow = saveFollow;
 module.exports.saveFans = saveFans;
 module.exports.saveWapShare = saveWapShare;
+module.exports.errorUrl = errorUrl;

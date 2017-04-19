@@ -10,6 +10,7 @@ let setShareFlag = require('./save').setShareFlag;
 let async = require('async');
 let log4js = require('log4js');
 let cheerio = require('cheerio');
+let errorUrl = require('./save').errorUrl;
 
 //###########http header#########
 let options = {
@@ -33,6 +34,7 @@ let getWapShareTasks = function (uk, total) {
     return wapShareTasks;
 };
 
+let errorUrlsArr = [];
 let getWapShare = function (url) {
     let deferred = q.defer();
     console.log('getWapShare:' + url);
@@ -43,11 +45,17 @@ let getWapShare = function (url) {
             "use strict";
             if (err) {
                 console.log('error url is:' + url);
+                errorUrlsArr.push(url);
+                if(errorUrlsArr.length>10){
+                    // console.log('errorUrlsArr length:'+errorUrlsArr.length);
+                    errorUrl(errorUrlsArr);
+                    errorUrlsArr = [];
+                }
                 deferred.resolve('err');
             }
             try {
                 // console.log(res.text);
-                let $ = cheerio.load(res.text);
+                let $ = cheerio.load(res1.text);
                 let temp = $('script')[16].children[0].data;
                 temp = temp.replace(/ /g, '');
                 temp = temp.substring(temp.indexOf('{"'), temp.indexOf('}();') - 2);
@@ -56,7 +64,12 @@ let getWapShare = function (url) {
                 deferred.resolve(parseWapShareJson(temp.feedata));
             } catch (e) {
                 console.log('error url is:' + url);
-                // console.log(e);
+                errorUrlsArr.push(url);
+                if(errorUrlsArr.length>10){
+                    // console.log('errorUrlsArr length:'+errorUrlsArr.length);
+                    errorUrl(errorUrlsArr);
+                    errorUrlsArr = [];
+                }
                 deferred.resolve('err');
             }
         });
