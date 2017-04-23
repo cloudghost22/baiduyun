@@ -54,7 +54,7 @@ let saveShare = function (data) {
     let saveSql = 'INSERT share(category,feed_time,isdir,server_filename,size,saveTime,shareid,shorturl,title,uk,username) VALUES ';
     let updateStr = '';
     for (let i of data) {
-        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '\\\'')).substr(0, 512) + '\',\'' + i.size + '\',\'' + i.saveTime + '\',\'' + i.shareid + '\',\'' + i.shorturl + '\',\'' + (i.title.replace(/\\/g, '').replace(/\'/g, '\\\'')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\\/g, '').replace(/\'/g, '\\\'') + '\'';
+        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.size + '\',\'' + i.saveTime + '\',\'' + i.shareid + '\',\'' + i.shorturl + '\',\'' + (i.title.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\\/g, '').replace(/\'/g, '') + '\'';
         // let temp = `'${i.category}','${i.feed_time}','${i.isdir}','${i.server_filename.substr(0, 512)}','${i.size}','${i.saveTime}','${i.shareid}','${i.shorturl}','${i.title.substr(0, 512)}','${i.uk}','${i.username}'`;
         temp = '(' + temp + ')';
         if (updateStr) {
@@ -84,7 +84,7 @@ let saveWapShare = function (data) {
     let updateStr = '';
     let _saveTime = (new Date()).valueOf();
     for (let i of data) {
-        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '\\\'')).substr(0, 512) + '\',\'' + i.size + '\',\'' + _saveTime + '\',\'' + i.shareid + '\',\'' + (i.title.replace(/\\/g, '').replace(/\'/g, '\\\'')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\\/g, '').replace(/\'/g, '\\\'') + '\'';
+        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.size + '\',\'' + _saveTime + '\',\'' + i.shareid + '\',\'' + (i.title.replace(/\\/g, '').replace(/\'/g, '\\\'')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\\/g, '').replace(/\'/g, '\\\'') + '\'';
         temp = '(' + temp + ')';
         if (updateStr) {
             updateStr += ',' + temp;
@@ -113,7 +113,7 @@ let saveFollow = function (data) {
     let saveSql = 'insert into users(uk,userName,followCount,fansCount,pubShareCount) values';
     let updateStr = '';
     for (let i of data) {
-        let temp = '\'' + i.uk + '\',\'' + (i.userName.replace(/\'/g, '\\\'').replace(/\\/g, '')).substr(0, 255) + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';
+        let temp = '\'' + i.uk + '\',\'' + (i.userName.replace(/\'/g, '').replace(/\\/g, '')).substr(0, 255) + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';
         temp = '(' + temp + ')';
         if (updateStr) {
             updateStr += ',' + temp;
@@ -122,7 +122,7 @@ let saveFollow = function (data) {
         }
     }
     saveSql += updateStr + ';';
-    console.log(saveSql);
+    // console.log(saveSql);
     pool.getConnection((err, conn) => {
         "use strict";
         conn.release();
