@@ -41,8 +41,13 @@ let setShareFlag = function (uk, flag = 0) {
         // console.log(`update users set ${flagArr[flag]} = 1 where uk = '${uk}';`);
         conn.query(`update users set ${flagArr[flag]} = 1 where uk = '${uk}';`, (err, result) => {
             conn.release();
-            if (err) deferred.reject(err);
-            deferred.resolve(result);
+            if (err){
+                console.log('error:'+saveSql);
+                deferred.resolve();
+            }else {
+                deferred.resolve(result);
+            }
+
         });
     });
     return deferred.promise;
@@ -71,8 +76,13 @@ let saveShare = function (data) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
-            if (err) throw err;
-            deferred.resolve(result.affectedRows);
+            if (err){
+                console.log('error:'+saveSql);
+                deferred.resolve();
+            }else {
+                deferred.resolve(result.affectedRows);
+            }
+
         });
     });
     return deferred.promise;
@@ -100,8 +110,13 @@ let saveWapShare = function (data) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
-            if (err) throw err;
-            deferred.resolve(result.affectedRows);
+            if (err){
+                console.log('error:'+saveSql);
+                deferred.resolve();
+            }else {
+                deferred.resolve(result.affectedRows);
+            }
+
         });
     });
     return deferred.promise;
@@ -128,8 +143,13 @@ let saveFollow = function (data) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
-            if (err) throw err;
-            deferred.resolve(result.affectedRows);
+            if (err){
+                console.log('error:'+saveSql);
+                deferred.resolve();
+            }else {
+                deferred.resolve(result.affectedRows);
+            }
+
         });
     });
     return deferred.promise;
@@ -156,8 +176,12 @@ let saveFans = function (data) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
-            if (err) throw err;
-            deferred.resolve(result.affectedRows);
+            if (err){
+                console.log('error:'+saveSql);
+                deferred.resolve();
+            }else{
+                deferred.resolve(result.affectedRows);
+            }
         });
     });
     return deferred.promise;
@@ -183,8 +207,12 @@ let errorUrl = function (urls) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
-            if (err) throw err;
-            deferred.resolve(result.affectedRows);
+            if (err){
+                console.log('error:'+saveSql);
+                deferred.resolve();
+            }else {
+                deferred.resolve(result.affectedRows);
+            }
         });
     });
     return deferred.promise;

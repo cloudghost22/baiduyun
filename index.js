@@ -6,9 +6,9 @@ let async = require('async');
 let FollowWorker = require('./crawler/fetch').FollowWorker;
 let FansWorker = require('./crawler/fetch').FansWorker;
 let WapShareWorker = require('./crawler/wapFetch').WapShareWorker;
-/*let q = require('q');
+let q = require('q');
 let sleeptime = require('sleep-time');
-let ShareWorker = require('./crawler/fetch').ShareWorker;
+/*let ShareWorker = require('./crawler/fetch').ShareWorker;
 let getUser = require('./crawler/save').getUser;
 let saveShare = require('./crawler/save').saveShare;
 let saveFollow = require('./crawler/save').saveFollow;
@@ -24,27 +24,23 @@ let getFansTasks = require('./crawler/fetch').getFansTasks;
 let saveWapShare = require('./crawler/save').saveWapShare;
 let getWapShare = require('./crawler/wapFetch').getWapShare;*/
 
-/*
-getFollow('https://pan.baidu.com/pcloud/friend/getfollowlist?query_uk=3292618829&limit=24&start=1128&bdstoken=null&channel=chunlei&clienttype=0&web=1')
+/*getFollow('https://pan.baidu.com/pcloud/friend/getfollowlist?query_uk=356856017&limit=24&start=24&bdstoken=null&channel=chunlei&clienttype=0&web=1')
     .then((data)=>{
         console.log(data);
         saveFollow(data);
-    });
-*/
+    });*/
 
-/*getFans('https://pan.baidu.com/pcloud/friend/getfanslist?query_uk=2469870276&limit=24&start=1128&bdstoken=null&channel=chunlei&clienttype=0&web=1')
+/*getFans('https://pan.baidu.com/pcloud/friend/getfanslist?query_uk=1295510178&limit=24&start=24&bdstoken=null&channel=chunlei&clienttype=0&web=1')
     .then((data)=>{
         console.log(data);
         saveFans(data);
     });*/
 
-/*
-getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=37088592&start=3860')
+/*getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=774603158&start=100')
     .then((data)=>{
         console.log(data);
         saveWapShare(data);
-    });
-*/
+    });*/
 
 /*let wapShareWorker = new WapShareWorker();
 wapShareWorker.init();*/
