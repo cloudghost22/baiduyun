@@ -26,79 +26,81 @@ let getFansTasks = require('./crawler/fetch').getFansTasks;
 let saveWapShare = require('./crawler/save').saveWapShare;
 let getWapShare = require('./crawler/wapFetch').getWapShare;
 
+
+getErrorUrls()
+    .then((result) => {
+        if (result != '') {
+            let urlArr = [];
+            let idArr = [];
+            for (let i of result) {
+                urlArr.push(i.url);
+                idArr.push(i.ID);
+            }
+            async.mapLimit(urlArr, 1, (url, callback) => {
+                console.time('Get errorurls wating');
+                sleeptime(500 + Math.round(Math.random() * 1000));
+                console.timeEnd('Get errorurls wating')
+                getWapShare(url)
+                    .then((data) => {
+                        saveWapShare(data);
+                    })
+                    .catch(err => console.log(err));
+                callback(null, null);
+            }, (err, res) => {
+                if (err) throw err;
+                updateErrorUrls(idArr);
+            });
+        }
+
+    })
+    .catch(err => console.log(err));
+
+
 /*getFollow('https://pan.baidu.com/pcloud/friend/getfollowlist?query_uk=3292618829&limit=24&start=1128&bdstoken=null&channel=chunlei&clienttype=0&web=1')
-    .then((data)=>{
-        console.log(data);
-        saveFollow(data);
-    });*/
+ .then((data)=>{
+ console.log(data);
+ saveFollow(data);
+ });*/
 
 /*getFans('https://pan.baidu.com/pcloud/friend/getfanslist?query_uk=2469870276&limit=24&start=1128&bdstoken=null&channel=chunlei&clienttype=0&web=1')
-    .then((data)=>{
-        console.log(data);
-        saveFans(data);
-    });*/
+ .then((data)=>{
+ console.log(data);
+ saveFans(data);
+ });*/
 
 /*
-getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=37088592&start=3860')
-    .then((data)=>{
-        console.log(data);
-        saveWapShare(data);
-    });
-*/
+ getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=37088592&start=3860')
+ .then((data)=>{
+ console.log(data);
+ saveWapShare(data);
+ });
+ */
 
 /*let wapShareWorker = new WapShareWorker();
-wapShareWorker.init();*/
+ wapShareWorker.init();*/
 
 // getWapShare('https://pan.baidu.com/wap/share/home?uk=608138975');
 
-let wapShareWorker = new WapShareWorker();
-let followWorker = new FollowWorker();
-let fansWorker = new FansWorker();
+/*let wapShareWorker = new WapShareWorker();
+ let followWorker = new FollowWorker();
+ let fansWorker = new FansWorker();
 
 
-async.parallel([
-    function () {
-        wapShareWorker.init();
-    },
-    function () {
-        followWorker.init();
-    },
-    function () {
-        fansWorker.init();
-    },
-    function () {
-        getErrorUrls()
-            .then((result)=>{
-            if(result != ''){
-                let urlArr = [];
-                let idArr = [];
-                for(let i of result){
-                    urlArr.push(i.url);
-                    idArr.push(i.ID);
-                }
-                async.mapLimit(urlArr,1,(url,callback)=>{
-                    console.time('Get errorurls wating');
-                    sleeptime(500 + Math.round(Math.random() * 1000));
-                    console.timeEnd('Get errorurls wating')
-                    getWapShare(url)
-                        .then((data)=>{
-                            saveWapShare(data);
-                        })
-                        .catch(err=>console.log(err));
-                    callback(null,null);
-                },(err,res)=>{
-                    if(err) throw err;
-                    updateErrorUrls(idArr);
-                });
-            }
-
-            })
-    }
-], (err,result)=>{
-    "use strict";
-    if(err) throw err;
-    console.log(result);
-});
+ async.parallel([
+ function () {
+ wapShareWorker.init();
+ },
+ function () {
+ followWorker.init();
+ },
+ function () {
+ fansWorker.init();
+ }
+ ], (err,result)=>{
+ "use strict";
+ if(err) throw err;
+ console.log(result);
+ });*/
 
 /*let test = function () {
  let deferred = q.defer();

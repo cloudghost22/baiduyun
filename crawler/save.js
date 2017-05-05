@@ -226,8 +226,12 @@ let getErrorUrls = function () {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(sql, (err, result) => {
-            if (err) throw err;
-            deferred.resolve(result);
+            if (err){
+                console.log('error:'+getErrorUrls);
+                deferred.resolve();
+            }else {
+                deferred.resolve(result);
+            }
         });
     });
   return deferred.promise;
@@ -246,8 +250,12 @@ let updateErrorUrls = function (IDs) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(sql, (err, result) => {
-            if (err) throw err;
-            deferred.resolve(result.affectedRows);
+            if (err)if (err){
+                console.log('error:'+updateErrorUrls);
+                deferred.resolve();
+            }else {
+                deferred.resolve(result.affectedRows);
+            }
         });
     });
     return deferred.promise;
