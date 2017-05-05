@@ -190,6 +190,41 @@ let errorUrl = function (urls) {
     return deferred.promise;
 };
 
+let getErrorUrls = function () {
+  let deferred = q.defer();
+  let sql = `select ID,url from errorurls where flag = 0 ORDER BY ID LIMIT 50;`;
+    pool.getConnection((err, conn) => {
+        "use strict";
+        conn.release();
+        if (err) deferred.reject(err);
+        conn.query(sql, (err, result) => {
+            if (err) throw err;
+            deferred.resolve(result);
+        });
+    });
+  return deferred.promise;
+};
+
+let updateErrorUrls = function (IDs) {
+    let deferred = q.defer();
+    let idArr = '';
+    for(let i of IDs){
+        idArr += (idArr.length > 0 ? ',':'') + i ;
+    }
+    let sql = `update errorurls set flag = 1 where ID in (${idArr});`;
+    console.log(sql);
+    pool.getConnection((err, conn) => {
+        "use strict";
+        conn.release();
+        if (err) deferred.reject(err);
+        conn.query(sql, (err, result) => {
+            if (err) throw err;
+            deferred.resolve(result.affectedRows);
+        });
+    });
+    return deferred.promise;
+};
+
 module.exports.getUser = getUser;
 module.exports.saveShare = saveShare;
 module.exports.setShareFlag = setShareFlag;
@@ -197,3 +232,5 @@ module.exports.saveFollow = saveFollow;
 module.exports.saveFans = saveFans;
 module.exports.saveWapShare = saveWapShare;
 module.exports.errorUrl = errorUrl;
+module.exports.getErrorUrls = getErrorUrls;
+module.exports.updateErrorUrls = updateErrorUrls;

@@ -6,7 +6,9 @@ let async = require('async');
 let FollowWorker = require('./crawler/fetch').FollowWorker;
 let FansWorker = require('./crawler/fetch').FansWorker;
 let WapShareWorker = require('./crawler/wapFetch').WapShareWorker;
-/*let q = require('q');
+let updateErrorUrls = require('./crawler/save').updateErrorUrls;
+let getErrorUrls = require('./crawler/save').getErrorUrls;
+let q = require('q');
 let sleeptime = require('sleep-time');
 let ShareWorker = require('./crawler/fetch').ShareWorker;
 let getUser = require('./crawler/save').getUser;
@@ -22,7 +24,7 @@ let getFollowTasks = require('./crawler/fetch').getFollowTasks;
 let getShareTasks = require('./crawler/fetch').getShareTasks;
 let getFansTasks = require('./crawler/fetch').getFansTasks;
 let saveWapShare = require('./crawler/save').saveWapShare;
-let getWapShare = require('./crawler/wapFetch').getWapShare;*/
+let getWapShare = require('./crawler/wapFetch').getWapShare;
 
 /*getFollow('https://pan.baidu.com/pcloud/friend/getfollowlist?query_uk=3292618829&limit=24&start=1128&bdstoken=null&channel=chunlei&clienttype=0&web=1')
     .then((data)=>{
@@ -63,6 +65,34 @@ async.parallel([
     },
     function () {
         fansWorker.init();
+    },
+    function () {
+        getErrorUrls()
+            .then((result)=>{
+            if(result != ''){
+                let urlArr = [];
+                let idArr = [];
+                for(let i of result){
+                    urlArr.push(i.url);
+                    idArr.push(i.ID);
+                }
+                async.mapLimit(urlArr,1,(url,callback)=>{
+                    console.time('Get errorurls wating');
+                    sleeptime(500 + Math.round(Math.random() * 1000));
+                    console.timeEnd('Get errorurls wating')
+                    getWapShare(url)
+                        .then((data)=>{
+                            saveWapShare(data);
+                        })
+                        .catch(err=>console.log(err));
+                    callback(null,null);
+                },(err,res)=>{
+                    if(err) throw err;
+                    updateErrorUrls(idArr);
+                });
+            }
+
+            })
     }
 ], (err,result)=>{
     "use strict";
