@@ -113,8 +113,10 @@ WapShareWorker.prototype = {
                 //console.log(user);
                 if (user == '') {
                     console.log('Get users share all done.Wating 5 min');
-                    sleeptime(300000);
-                    deferred.resolve(this.init());
+                    // sleeptime(300000);
+                    setTimeout(()=>{
+                        deferred.resolve(this.init());
+                    },300000);
                 }
                 if (user[0].pubshareCount == 0) {
                     //该用户无分享数据，递归
@@ -130,7 +132,7 @@ WapShareWorker.prototype = {
                     async.mapLimit(urls, 3, (url, callback) => {
                         "use strict";
                         console.time('Get share wating');
-                        sleeptime(500 + Math.round(Math.random() * 1000));
+                        sleeptime(600 + Math.round(Math.random() * 600));
                         console.timeEnd('Get share wating');
                         getWapShare(url)
                             .then((shareDate) => {

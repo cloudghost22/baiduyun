@@ -45,8 +45,9 @@ ShareWorker.prototype = {
             .then((user) => {
                 if (user == '') {
                     logger.trace('Get users share all done.Wating 5 min');
-                    sleeptime(300000);
-                    deferred.resolve(this.init());
+                    setTimeout(()=>{
+                        deferred.resolve(this.init());
+                    },300000);
                 }
                 if (user[0].pubshareCount == 0) {
                     //该用户无分享数据，递归
@@ -61,7 +62,7 @@ ShareWorker.prototype = {
                     async.mapLimit(urls, 1, (url, callback) => {
                         "use strict";
                         console.time('Get share wating');
-                        sleeptime(1000 + Math.round(Math.random() * 2000));
+                        sleeptime(500 + Math.round(Math.random() * 1000));
                         console.timeEnd('Get share wating');
                         if(++shareCounter == 9){
                             logger.trace('Get share sleep 2min');
@@ -160,8 +161,9 @@ FollowWorker.prototype = {
             "use strict";
             if (user == '') {
                 logger.trace('Get users follow all done.Wating 5 min');
-                sleeptime(300000);
-                deferred.resolve(this.init());
+                setTimeout(()=>{
+                    deferred.resolve(this.init());
+                },300000);
             }
             if (user[0].followCount == 0) {
                 //该用户无订阅数据，递归
@@ -179,7 +181,7 @@ FollowWorker.prototype = {
                 async.mapLimit(urls, 1, (url, callback) => {
                     "use strict";
                     console.time('Get follow wating');
-                    sleeptime(1000 + Math.round(Math.random() * 3000));
+                    sleeptime(1000 + Math.round(Math.random() * 1000));
                     console.timeEnd('Get follow wating');
                     getFollow(url)
                         .then((followDate) => {
@@ -272,8 +274,9 @@ FansWorker.prototype = {
             "use strict";
             if (user == '') {
                 logger.trace('Get users fans all done.Wating 5 min');
-                sleeptime(300000);
-                deferred.resolve(this.init());
+                setTimeout(()=>{
+                    deferred.resolve(this.init());
+                },300000);
             }
             if (user[0].fansCount == 0) {
                 //该用户无订阅数据，递归
