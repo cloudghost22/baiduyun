@@ -26,7 +26,7 @@ let getFansTasks = require('./crawler/fetch').getFansTasks;
 let saveWapShare = require('./crawler/save').saveWapShare;
 let getWapShare = require('./crawler/wapFetch').getWapShare;
 
-let ErrorUrls = function () {
+/*let ErrorUrls = function () {
 
 };
 ErrorUrls.prototype = {
@@ -70,7 +70,7 @@ ErrorUrls.prototype = {
 
 let errorUrls = new ErrorUrls();
 
-errorUrls.begin();
+errorUrls.begin();*/
 
 
 /*getFollow('https://pan.baidu.com/pcloud/friend/getfollowlist?query_uk=3292618829&limit=24&start=1128&bdstoken=null&channel=chunlei&clienttype=0&web=1')
@@ -85,13 +85,11 @@ errorUrls.begin();
  saveFans(data);
  });*/
 
-/*
- getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=37088592&start=3860')
+ getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=1835176878&start=1660')
  .then((data)=>{
  console.log(data);
  saveWapShare(data);
  });
- */
 
 /*let wapShareWorker = new WapShareWorker();
  wapShareWorker.init();*/

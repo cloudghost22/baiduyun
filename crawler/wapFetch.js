@@ -44,6 +44,7 @@ let getWapShare = function (url) {
         .end((err, res) => {
             "use strict";
             if (err) {
+                // console.log(err);
                 console.log('error url is:' + url);
                 errorUrlsArr.push(url);
                 if(errorUrlsArr.length>10){
@@ -78,7 +79,7 @@ let getWapShare = function (url) {
 
 //解析分享json
 let parseWapShareJson = function (json) {
-    // console.log(json.records.length);
+    console.log(json);
     let userShare = [];
     let shareObj = {};
     for (let i = 0; i < json.records.length; i++) {
