@@ -41,10 +41,10 @@ let setShareFlag = function (uk, flag = 0) {
         // console.log(`update users set ${flagArr[flag]} = 1 where uk = '${uk}';`);
         conn.query(`update users set ${flagArr[flag]} = 1 where uk = '${uk}';`, (err, result) => {
             conn.release();
-            if (err){
-                console.log('error:'+saveSql);
+            if (err) {
+                console.log('error:' + saveSql);
                 deferred.resolve();
-            }else {
+            } else {
                 deferred.resolve(result);
             }
 
@@ -76,10 +76,10 @@ let saveShare = function (data) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
-            if (err){
-                console.log('error:'+saveSql);
+            if (err) {
+                console.log('error:' + saveSql);
                 deferred.resolve();
-            }else {
+            } else {
                 deferred.resolve(result.affectedRows);
             }
 
@@ -110,10 +110,10 @@ let saveWapShare = function (data) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
-            if (err){
-                console.log('error:'+saveSql);
+            if (err) {
+                console.log('error:' + saveSql);
                 deferred.resolve();
-            }else {
+            } else {
                 deferred.resolve(result.affectedRows);
             }
 
@@ -143,10 +143,10 @@ let saveFollow = function (data) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
-            if (err){
-                console.log('error:'+saveSql);
+            if (err) {
+                console.log('error:' + saveSql);
                 deferred.resolve();
-            }else {
+            } else {
                 deferred.resolve(result.affectedRows);
             }
 
@@ -176,10 +176,10 @@ let saveFans = function (data) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
-            if (err){
-                console.log('error:'+saveSql);
+            if (err) {
+                console.log('error:' + saveSql);
                 deferred.resolve();
-            }else{
+            } else {
                 deferred.resolve(result.affectedRows);
             }
         });
@@ -192,7 +192,7 @@ let errorUrl = function (urls) {
     let saveSql = 'INSERT into errorurls(url) VALUES ';
     let updateStr = '';
     for (let i of urls) {
-        let temp = '\''+i.substr(0, 512)+'\'';
+        let temp = '\'' + i.substr(0, 512) + '\'';
         temp = '(' + temp + ')';
         if (updateStr) {
             updateStr += ',' + temp;
@@ -207,10 +207,10 @@ let errorUrl = function (urls) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
-            if (err){
-                console.log('error:'+saveSql);
+            if (err) {
+                console.log('error:' + saveSql);
                 deferred.resolve();
-            }else {
+            } else {
                 deferred.resolve(result.affectedRows);
             }
         });
@@ -219,29 +219,29 @@ let errorUrl = function (urls) {
 };
 
 let getErrorUrls = function () {
-  let deferred = q.defer();
-  let sql = `select ID,url from errorurls where flag = 0 ORDER BY ID LIMIT 50;`;
+    let deferred = q.defer();
+    let sql = `select ID,url from errorurls where flag = 0 ORDER BY ID LIMIT 5;`;
     pool.getConnection((err, conn) => {
         "use strict";
         conn.release();
         if (err) deferred.reject(err);
         conn.query(sql, (err, result) => {
-            if (err){
-                console.log('error:'+getErrorUrls);
+            if (err) {
+                console.log('error:' + getErrorUrls);
                 deferred.resolve();
-            }else {
+            } else {
                 deferred.resolve(result);
             }
         });
     });
-  return deferred.promise;
+    return deferred.promise;
 };
 
 let updateErrorUrls = function (IDs) {
     let deferred = q.defer();
     let idArr = '';
-    for(let i of IDs){
-        idArr += (idArr.length > 0 ? ',':'') + i ;
+    for (let i of IDs) {
+        idArr += (idArr.length > 0 ? ',' : '') + i;
     }
     let sql = `update errorurls set flag = 1 where ID in (${idArr});`;
     console.log(sql);
@@ -250,11 +250,11 @@ let updateErrorUrls = function (IDs) {
         conn.release();
         if (err) deferred.reject(err);
         conn.query(sql, (err, result) => {
-            if (err)if (err){
-                console.log('error:'+updateErrorUrls);
+            if (err)if (err) {
+                console.log('error:' + updateErrorUrls);
                 deferred.resolve();
-            }else {
-                deferred.resolve(result.affectedRows);
+            } else {
+                deferred.resolve(result);
             }
         });
     });

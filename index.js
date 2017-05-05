@@ -26,34 +26,51 @@ let getFansTasks = require('./crawler/fetch').getFansTasks;
 let saveWapShare = require('./crawler/save').saveWapShare;
 let getWapShare = require('./crawler/wapFetch').getWapShare;
 
+let ErrorUrls = function () {
 
-getErrorUrls()
-    .then((result) => {
-        if (result != '') {
-            let urlArr = [];
-            let idArr = [];
-            for (let i of result) {
-                urlArr.push(i.url);
-                idArr.push(i.ID);
-            }
-            async.mapLimit(urlArr, 1, (url, callback) => {
-                console.time('Get errorurls wating');
-                sleeptime(500 + Math.round(Math.random() * 1000));
-                console.timeEnd('Get errorurls wating')
-                getWapShare(url)
-                    .then((data) => {
-                        saveWapShare(data);
-                    })
-                    .catch(err => console.log(err));
-                callback(null, null);
-            }, (err, res) => {
-                if (err) throw err;
-                updateErrorUrls(idArr);
-            });
-        }
+};
+ErrorUrls.prototype = {
+    begin: function () {
+        let deferred = q.defer();
+        getErrorUrls()
+            .then((result) => {
+                if (result != '') {
+                    let urlArr = [];
+                    let idArr = [];
+                    for (let i of result) {
+                        urlArr.push(i.url);
+                        idArr.push(i.ID);
+                    }
+                    async.mapLimit(urlArr, 1, (url, callback) => {
+                        console.time('Get errorurls wating');
+                        sleeptime(500 + Math.round(Math.random() * 1000));
+                        console.timeEnd('Get errorurls wating');
+                        getWapShare(url)
+                            .then((data) => {
+                                saveWapShare(data);
+                            })
+                            .catch(err => console.log(err));
+                        callback(null, null);
+                    }, (err, res) => {
+                        if (err) throw err;
+                        updateErrorUrls(idArr);
+                        deferred.resolve(this.begin());
+                    });
+                }
+                else {
+                    console.log('over');
+                    throw err;
+                }
 
-    })
-    .catch(err => console.log(err));
+            })
+            .catch(err => console.log(err));
+        return deferred.promise;
+    }
+};
+
+let errorUrls = new ErrorUrls();
+
+errorUrls.begin();
 
 
 /*getFollow('https://pan.baidu.com/pcloud/friend/getfollowlist?query_uk=3292618829&limit=24&start=1128&bdstoken=null&channel=chunlei&clienttype=0&web=1')
