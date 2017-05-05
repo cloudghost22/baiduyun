@@ -110,6 +110,7 @@ WapShareWorker.prototype = {
         //获取用户
         getUser(0)
             .then((user) => {
+                //console.log(user);
                 if (user == '') {
                     console.log('Get users share all done.Wating 5 min');
                     sleeptime(300000);

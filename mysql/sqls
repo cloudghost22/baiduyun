@@ -9,7 +9,7 @@ CREATE TABLE `users` (
   `followFlag` tinyint(4) DEFAULT '0',
   `fansFlag` tinyint(4) DEFAULT '0',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=25639 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `share` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -25,7 +25,7 @@ CREATE TABLE `share` (
   `uk` decimal(12,0) DEFAULT NULL,
   `username` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `errorurls` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -36,3 +36,9 @@ CREATE TABLE `errorurls` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 ALTER TABLE share ADD FULLTEXT INDEX ft_index (title) WITH PARSER ngram;
+
+CREATE  VIEW `v_fetcheduser` AS select `users`.`uk` AS `uk` from `users` where (`users`.`shareFlag` = 1);
+
+CREATE  VIEW `v_fanseduser` AS select `users`.`uk` AS `uk` from `users` where (`users`.`fansFlag` = 1);
+
+CREATE  VIEW `v_followeduser` AS select `users`.`uk` AS `uk` from `users` where (`users`.`followFlag` = 1);
