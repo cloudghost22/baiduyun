@@ -28,49 +28,49 @@ let getWapShare = require('./crawler/wapFetch').getWapShare;
 
 /*let ErrorUrls = function () {
 
-};
-ErrorUrls.prototype = {
-    begin: function () {
-        let deferred = q.defer();
-        getErrorUrls()
-            .then((result) => {
-                if (result != '') {
-                    let urlArr = [];
-                    let idArr = [];
-                    for (let i of result) {
-                        urlArr.push(i.url);
-                        idArr.push(i.ID);
-                    }
-                    async.mapLimit(urlArr, 1, (url, callback) => {
-                        console.time('Get errorurls wating');
-                        sleeptime(500 + Math.round(Math.random() * 1000));
-                        console.timeEnd('Get errorurls wating');
-                        getWapShare(url)
-                            .then((data) => {
-                                saveWapShare(data);
-                            })
-                            .catch(err => console.log(err));
-                        callback(null, null);
-                    }, (err, res) => {
-                        if (err) throw err;
-                        updateErrorUrls(idArr);
-                        deferred.resolve(this.begin());
-                    });
-                }
-                else {
-                    console.log('over');
-                    throw err;
-                }
+ };
+ ErrorUrls.prototype = {
+ begin: function () {
+ let deferred = q.defer();
+ getErrorUrls()
+ .then((result) => {
+ if (result != '') {
+ let urlArr = [];
+ let idArr = [];
+ for (let i of result) {
+ urlArr.push(i.url);
+ idArr.push(i.ID);
+ }
+ async.mapLimit(urlArr, 1, (url, callback) => {
+ console.time('Get errorurls wating');
+ sleeptime(500 + Math.round(Math.random() * 1000));
+ console.timeEnd('Get errorurls wating');
+ getWapShare(url)
+ .then((data) => {
+ saveWapShare(data);
+ })
+ .catch(err => console.log(err));
+ callback(null, null);
+ }, (err, res) => {
+ if (err) throw err;
+ updateErrorUrls(idArr);
+ deferred.resolve(this.begin());
+ });
+ }
+ else {
+ console.log('over');
+ throw err;
+ }
 
-            })
-            .catch(err => console.log(err));
-        return deferred.promise;
-    }
-};
+ })
+ .catch(err => console.log(err));
+ return deferred.promise;
+ }
+ };
 
-let errorUrls = new ErrorUrls();
+ let errorUrls = new ErrorUrls();
 
-errorUrls.begin();*/
+ errorUrls.begin();*/
 
 
 /*getFollow('https://pan.baidu.com/pcloud/friend/getfollowlist?query_uk=3292618829&limit=24&start=1128&bdstoken=null&channel=chunlei&clienttype=0&web=1')
@@ -85,37 +85,37 @@ errorUrls.begin();*/
  saveFans(data);
  });*/
 
- getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=1835176878&start=1660')
+/* getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=53901172&start=540')
  .then((data)=>{
  console.log(data);
  saveWapShare(data);
- });
+ });*/
 
 /*let wapShareWorker = new WapShareWorker();
  wapShareWorker.init();*/
 
 // getWapShare('https://pan.baidu.com/wap/share/home?uk=608138975');
 
-/*let wapShareWorker = new WapShareWorker();
- let followWorker = new FollowWorker();
- let fansWorker = new FansWorker();
+let wapShareWorker = new WapShareWorker();
+let followWorker = new FollowWorker();
+let fansWorker = new FansWorker();
 
 
- async.parallel([
- function () {
- wapShareWorker.init();
- },
- function () {
- followWorker.init();
- },
- function () {
- fansWorker.init();
- }
- ], (err,result)=>{
- "use strict";
- if(err) throw err;
- console.log(result);
- });*/
+async.parallel([
+    function () {
+        wapShareWorker.init();
+    },
+    function () {
+        followWorker.init();
+    },
+    function () {
+        fansWorker.init();
+    }
+], (err, result) => {
+    "use strict";
+    if (err) throw err;
+    console.log(result);
+});
 
 /*let test = function () {
  let deferred = q.defer();
