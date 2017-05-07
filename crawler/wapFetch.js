@@ -79,23 +79,28 @@ let getWapShare = function (url) {
 
 //解析分享json
 let parseWapShareJson = function (json) {
-    console.log(json);
+    // console.log(json);
     let userShare = [];
     let shareObj = {};
     for (let i = 0; i < json.records.length; i++) {
-        shareObj.category = json.records[i].category;
-        shareObj.feed_time = json.records[i].feed_time;
-        shareObj.isdir = json.records[i].filelist[0].isdir;
-        shareObj.server_filename = json.records[i].filelist[0].server_filename;
-        shareObj.size = json.records[i].filelist[0].size;
-        // shareObj.saveTime = json.records[i].filelist[0].time_stamp;
-        shareObj.shareid = json.records[i].shareid;
-        // shareObj.shorturl = json.records[i].shorturl;
-        shareObj.title = json.records[i].title;
-        shareObj.uk = json.records[i].uk;
-        shareObj.username = json.records[i].username;
-        userShare[i] = shareObj;
-        shareObj = {};
+        if(json.records[i].feed_type == 'share'){
+            shareObj.category = json.records[i].category;
+            shareObj.feed_time = json.records[i].feed_time;
+            shareObj.isdir = json.records[i].filelist[0].isdir;
+            shareObj.server_filename = json.records[i].filelist[0].server_filename;
+            shareObj.size = json.records[i].filelist[0].size;
+            // shareObj.saveTime = json.records[i].filelist[0].time_stamp;
+            shareObj.shareid = json.records[i].shareid;
+            // shareObj.shorturl = json.records[i].shorturl;
+            shareObj.title = json.records[i].title;
+            shareObj.uk = json.records[i].uk;
+            shareObj.username = json.records[i].username;
+            userShare[i] = shareObj;
+            shareObj = {};
+        }else if(json.records[i].feed_type == 'album'){
+            let albumUrl = `https://pan.baidu.com/wap/album/info?uk=${json.records[i].uk}&third=0&album_id=${json.records[i].album_id}`;
+            errorUrl(new Array(albumUrl));
+        }
     }
     // console.log(userShare);
     return userShare;

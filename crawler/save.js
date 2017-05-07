@@ -94,12 +94,14 @@ let saveWapShare = function (data) {
     let updateStr = '';
     let _saveTime = (new Date()).valueOf();
     for (let i of data) {
-        let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.size + '\',\'' + _saveTime + '\',\'' + i.shareid + '\',\'' + (i.title.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\\/g, '').replace(/\'/g, '') + '\'';
-        temp = '(' + temp + ')';
-        if (updateStr) {
-            updateStr += ',' + temp;
-        } else {
-            updateStr += temp;
+        if (i) {
+            let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.size + '\',\'' + _saveTime + '\',\'' + i.shareid + '\',\'' + (i.title.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\\/g, '').replace(/\'/g, '') + '\'';
+            temp = '(' + temp + ')';
+            if (updateStr) {
+                updateStr += ',' + temp;
+            } else {
+                updateStr += temp;
+            }
         }
         // console.log(temp);
     }
@@ -201,7 +203,7 @@ let errorUrl = function (urls) {
         }
     }
     saveSql += updateStr + ';';
-    // console.log(saveSql);
+    console.log('saveSql' + saveSql);
     pool.getConnection((err, conn) => {
         "use strict";
         conn.release();
@@ -220,7 +222,7 @@ let errorUrl = function (urls) {
 
 let getErrorUrls = function () {
     let deferred = q.defer();
-    let sql = `select ID,url from errorurls where flag = 0 ORDER BY ID LIMIT 5;`;
+    let sql = `select ID,url from errorurls where flag = 0 ORDER BY ID LIMIT 10;`;
     pool.getConnection((err, conn) => {
         "use strict";
         conn.release();
@@ -244,13 +246,13 @@ let updateErrorUrls = function (IDs) {
         idArr += (idArr.length > 0 ? ',' : '') + i;
     }
     let sql = `update errorurls set flag = 1 where ID in (${idArr});`;
-    console.log(sql);
+    // console.log(sql);
     pool.getConnection((err, conn) => {
         "use strict";
         conn.release();
         if (err) deferred.reject(err);
         conn.query(sql, (err, result) => {
-            if (err)if (err) {
+            if (err) {
                 console.log('error:' + updateErrorUrls);
                 deferred.resolve();
             } else {
