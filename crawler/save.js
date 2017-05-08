@@ -95,8 +95,16 @@ let saveWapShare = function (data) {
     let _saveTime = (new Date()).valueOf();
     for (let i of data) {
         if (i) {
-            let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.size + '\',\'' + _saveTime + '\',\'' + i.shareid + '\',\'' + (i.title.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\\/g, '').replace(/\'/g, '') + '\'';
+            let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' ;
+            if(i.server_filename){
+                temp += i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.size + '\',\'';
+            }else {
+                temp += null + '\',\'' + null + '\',\'' + null + '\',\'';
+            }
+
+            temp += _saveTime + '\',\'' + i.shareid + '\',\'' + (i.title.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\\/g, '').replace(/\'/g, '') + '\'';
             temp = '(' + temp + ')';
+            // console.log(temp);
             if (updateStr) {
                 updateStr += ',' + temp;
             } else {

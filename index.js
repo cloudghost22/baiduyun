@@ -113,9 +113,9 @@ async.parallel([
  saveFans(data);
  });*/
 
-/* getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=53901172&start=540')
+/* getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=2702044958&start=920')
  .then((data)=>{
- console.log(data);
+ // console.log(data);
  saveWapShare(data);
  });*/
 

@@ -86,9 +86,11 @@ let parseWapShareJson = function (json) {
         if(json.records[i].feed_type == 'share'){
             shareObj.category = json.records[i].category;
             shareObj.feed_time = json.records[i].feed_time;
-            shareObj.isdir = json.records[i].filelist[0].isdir;
-            shareObj.server_filename = json.records[i].filelist[0].server_filename;
-            shareObj.size = json.records[i].filelist[0].size;
+            if(json.records[i].filelist[0]){
+                shareObj.isdir = json.records[i].filelist[0].isdir;
+                shareObj.server_filename = json.records[i].filelist[0].server_filename;
+                shareObj.size = json.records[i].filelist[0].size;
+            }
             // shareObj.saveTime = json.records[i].filelist[0].time_stamp;
             shareObj.shareid = json.records[i].shareid;
             // shareObj.shorturl = json.records[i].shorturl;
