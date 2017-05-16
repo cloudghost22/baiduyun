@@ -47,7 +47,7 @@ let getWapShare = function (url) {
                 // console.log(err);
                 console.log('error url is:' + url);
                 errorUrlsArr.push(url);
-                if(errorUrlsArr.length>10){
+                if (errorUrlsArr.length > 10) {
                     // console.log('errorUrlsArr length:'+errorUrlsArr.length);
                     errorUrl(errorUrlsArr);
                     errorUrlsArr = [];
@@ -66,7 +66,51 @@ let getWapShare = function (url) {
             } catch (e) {
                 console.log('error url is:' + url);
                 errorUrlsArr.push(url);
-                if(errorUrlsArr.length>10){
+                if (errorUrlsArr.length > 10) {
+                    // console.log('errorUrlsArr length:'+errorUrlsArr.length);
+                    errorUrl(errorUrlsArr);
+                    errorUrlsArr = [];
+                }
+                deferred.resolve('err');
+            }
+        });
+    return deferred.promise;
+};
+
+let getWapAlbumShare = function (url) {
+    let deferred = q.defer();
+    console.log('getWapShare:' + url);
+    superagent
+        .get(url)
+        .set(options)
+        .end((err, res) => {
+            "use strict";
+            if (err) {
+                console.log('err:' + err);
+                console.log('error url is:' + url);
+                errorUrlsArr.push(url);
+                if (errorUrlsArr.length > 10) {
+                    // console.log('errorUrlsArr length:'+errorUrlsArr.length);
+                    errorUrl(errorUrlsArr);
+                    errorUrlsArr = [];
+                }
+                deferred.resolve('err');
+            }
+            try {
+                // console.log('res:'+res.text);
+                let $ = cheerio.load(res.text);
+                let temp = $('script')[12].children[0].data;
+                temp = temp.replace(/ /g, '');
+                temp = temp.substring(temp.indexOf('{"'), temp.indexOf('}();') - 2);
+                // console.log(temp);
+                temp = eval("(" + temp + ")");
+                // console.log('temp.albumlist.count:' + temp.albumlist.count);
+                deferred.resolve(parseWapAlbumShareJson(temp));
+            } catch (e) {
+                // console.log('e:'+e);
+                console.log('error url is:' + url);
+                errorUrlsArr.push(url);
+                if (errorUrlsArr.length > 10) {
                     // console.log('errorUrlsArr length:'+errorUrlsArr.length);
                     errorUrl(errorUrlsArr);
                     errorUrlsArr = [];
@@ -79,14 +123,14 @@ let getWapShare = function (url) {
 
 //解析分享json
 let parseWapShareJson = function (json) {
-    // console.log(json);
+    console.log(json);
     let userShare = [];
     let shareObj = {};
     for (let i = 0; i < json.records.length; i++) {
-        if(json.records[i].feed_type == 'share'){
+        if (json.records[i].feed_type == 'share') {
             shareObj.category = json.records[i].category;
             shareObj.feed_time = json.records[i].feed_time;
-            if(json.records[i].filelist[0]){
+            if (json.records[i].filelist[0]) {
                 shareObj.isdir = json.records[i].filelist[0].isdir;
                 shareObj.server_filename = json.records[i].filelist[0].server_filename;
                 shareObj.size = json.records[i].filelist[0].size;
@@ -99,10 +143,41 @@ let parseWapShareJson = function (json) {
             shareObj.username = json.records[i].username;
             userShare[i] = shareObj;
             shareObj = {};
-        }else if(json.records[i].feed_type == 'album'){
+        } else if (json.records[i].feed_type == 'album') {
             let albumUrl = `https://pan.baidu.com/wap/album/info?uk=${json.records[i].uk}&third=0&album_id=${json.records[i].album_id}`;
             errorUrl(new Array(albumUrl));
         }
+    }
+    // console.log(userShare);
+    return userShare;
+};
+
+
+//解析分享json Album
+let parseWapAlbumShareJson = function (json) {
+    // console.log(json);
+    let fileList = json.albumlist.list;
+    // console.log(fileList.length);
+    // console.log(fileList[0].category);
+    let uk = json.uinfo.uk;
+    let username = json.uinfo.uname;
+    let userShare = [];
+    let shareObj = {};
+    for (let i = 0; i < fileList.length; i++) {
+        shareObj.category = fileList[i].category;
+        //share time
+        shareObj.feed_time = fileList[i].add_time;
+        shareObj.isdir = fileList[i].isdir;
+        shareObj.server_filename = fileList[i].server_filename;
+        shareObj.size = fileList[i].size;
+        // shareObj.saveTime = json.records[i].filelist[0].time_stamp;
+        shareObj.shareid = fileList[i].fs_id;
+        // shareObj.shorturl = json.records[i].shorturl;
+        shareObj.title = fileList[i].server_filename;
+        shareObj.uk = uk;
+        shareObj.username = username;
+        userShare[i] = shareObj;
+        shareObj = {};
     }
     // console.log(userShare);
     return userShare;
@@ -122,9 +197,9 @@ WapShareWorker.prototype = {
                 if (user == '') {
                     console.log('Get users share all done.Wating 5 min');
                     // sleeptime(300000);
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         deferred.resolve(this.init());
-                    },300000);
+                    }, 300000);
                 }
                 if (user[0].pubshareCount == 0) {
                     //该用户无分享数据，递归
@@ -139,19 +214,33 @@ WapShareWorker.prototype = {
                     // console.log(urls);
                     async.mapLimit(urls, 3, (url, callback) => {
                         "use strict";
+                        /*console.time('Get share wating');
+                         sleeptime(600 + Math.round(Math.random() * 600));
+                         console.timeEnd('Get share wating');
+                         getWapShare(url)
+                         .then((shareDate) => {
+                         if (shareDate == 'err' || shareDate == '') {
+                         callback(null, null);
+                         } else {
+                         saveWapShare(shareDate);
+                         callback(null, null);
+                         }
+                         })
+                         .catch(err => callback(err, null));*/
                         console.time('Get share wating');
-                        sleeptime(600 + Math.round(Math.random() * 600));
-                        console.timeEnd('Get share wating');
-                        getWapShare(url)
-                            .then((shareDate) => {
-                                if (shareDate == 'err' || shareDate == '') {
-                                    callback(null, null);
-                                } else {
-                                    saveWapShare(shareDate);
-                                    callback(null, null);
-                                }
-                            })
-                            .catch(err => callback(err, null));
+                        setTimeout(() => {
+                            console.timeEnd('Get share wating');
+                            getWapShare(url)
+                                .then((shareDate) => {
+                                    if (shareDate == 'err' || shareDate == '') {
+                                        callback(null, null);
+                                    } else {
+                                        saveWapShare(shareDate);
+                                        callback(null, null);
+                                    }
+                                })
+                                .catch(err => callback(err, null));
+                        }, 600 + Math.round(Math.random() * 600));
                     }, (err, result) => {
                         "use strict";
                         if (err) throw err;
@@ -169,3 +258,4 @@ WapShareWorker.prototype = {
 
 module.exports.getWapShare = getWapShare;
 module.exports.WapShareWorker = WapShareWorker;
+module.exports.getWapAlbumShare = getWapAlbumShare;

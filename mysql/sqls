@@ -11,6 +11,8 @@ CREATE TABLE `users` (
   PRIMARY KEY (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+ALTER table users add INDEX idx_uk(uk);
+
 CREATE TABLE `share` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `category` tinyint(4) DEFAULT NULL,
@@ -19,7 +21,7 @@ CREATE TABLE `share` (
   `server_filename` varchar(1024) DEFAULT NULL,
   `size` decimal(10,0) unsigned DEFAULT NULL,
   `saveTime` decimal(13,0) DEFAULT NULL,
-  `shareid` decimal(11,0) DEFAULT NULL,
+  `shareid` decimal(18,0) DEFAULT NULL,
   `shorturl` char(8) DEFAULT NULL,
   `title` varchar(1024) DEFAULT NULL,
   `uk` decimal(12,0) DEFAULT NULL,
