@@ -43,19 +43,34 @@ ErrorUrls.prototype = {
                         idArr.push(i.ID);
                     }
                     async.mapLimit(urlArr, 1, (url, callback) => {
-                        console.time('Get errorurls wating');
-                        sleeptime(500 + Math.round(Math.random() * 1000));
-                        console.timeEnd('Get errorurls wating');
-                        getWapShare(url)
-                            .then((data) => {
-                                saveWapShare(data)
-                                    .then((res) => {
-                                        callback(null, null);
+                        if (url.indexOf('album') < 0) {
+                            setTimeout(() => {
+                                console.log('Get errorurls start:' + new Date().toLocaleString());
+                                getWapShare(url)
+                                    .then((data) => {
+                                        saveWapShare(data)
+                                            .then((res) => {
+                                                callback(null, null);
+                                            })
+                                            .catch(err => console.log(err));
                                     })
                                     .catch(err => console.log(err));
-                            })
-                            .catch(err => console.log(err));
-
+                            }, 500 + Math.round(Math.random() * 1000));
+                        }
+                        else {
+                            setTimeout(() => {
+                                console.log('Get errorurls start:' + new Date().toLocaleString());
+                                getWapAlbumShare(url)
+                                    .then((data) => {
+                                        saveWapShare(data)
+                                            .then((res) => {
+                                                callback(null, null);
+                                            })
+                                            .catch(err => console.log(err));
+                                    })
+                                    .catch(err => console.log(err));
+                            }, 500 + Math.round(Math.random() * 1000));
+                        }
                     }, (err, res) => {
                         if (err) throw err;
                         updateErrorUrls(idArr)
@@ -66,10 +81,12 @@ ErrorUrls.prototype = {
                     });
                 }
                 else {
-                    console.log('over');
-                    throw err;
+                    console.log('Get errorurls  all done.Wating 5 min');
+                    // sleeptime(300000);
+                    setTimeout(() => {
+                        deferred.resolve(this.begin());
+                    }, 300000);
                 }
-
             })
             .catch(err => console.log(err));
         return deferred.promise;
@@ -81,8 +98,7 @@ let errorUrls = new ErrorUrls();
 let wapShareWorker = new WapShareWorker();
 let followWorker = new FollowWorker();
 let fansWorker = new FansWorker();
-
-wapShareWorker.init();
+followWorker.init();
 /*async.parallel([
     function () {
         wapShareWorker.init();
@@ -121,10 +137,10 @@ wapShareWorker.init();
  });*/
 
 /*getWapAlbumShare('https://pan.baidu.com/wap/album/info?uk=2989869023&third=0&album_id=830678569074082690')
-    .then((data)=>{
-        // console.log(data);
-        saveWapShare(data);
-    });*/
+ .then((data)=>{
+ // console.log(data);
+ saveWapShare(data);
+ });*/
 
 /*let wapShareWorker = new WapShareWorker();
  wapShareWorker.init();*/

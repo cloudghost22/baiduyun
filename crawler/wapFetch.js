@@ -123,7 +123,7 @@ let getWapAlbumShare = function (url) {
 
 //解析分享json
 let parseWapShareJson = function (json) {
-    console.log(json);
+    // console.log(json);
     let userShare = [];
     let shareObj = {};
     for (let i = 0; i < json.records.length; i++) {
@@ -195,11 +195,11 @@ WapShareWorker.prototype = {
             .then((user) => {
                 //console.log(user);
                 if (user == '') {
-                    console.log('Get users share all done.Wating 5 min');
+                    console.log('Get users share all done.Wating 10 min');
                     // sleeptime(300000);
                     setTimeout(() => {
                         deferred.resolve(this.init());
-                    }, 300000);
+                    }, 600000);
                 }
                 if (user[0].pubshareCount == 0) {
                     //该用户无分享数据，递归
@@ -212,24 +212,12 @@ WapShareWorker.prototype = {
                     console.log('getWapShareTasks');
                     let urls = getWapShareTasks(user[0].uk, user[0].pubshareCount);
                     // console.log(urls);
-                    async.mapLimit(urls, 3, (url, callback) => {
+                    async.mapLimit(urls, 1, (url, callback) => {
                         "use strict";
-                        /*console.time('Get share wating');
-                         sleeptime(600 + Math.round(Math.random() * 600));
-                         console.timeEnd('Get share wating');
-                         getWapShare(url)
-                         .then((shareDate) => {
-                         if (shareDate == 'err' || shareDate == '') {
-                         callback(null, null);
-                         } else {
-                         saveWapShare(shareDate);
-                         callback(null, null);
-                         }
-                         })
-                         .catch(err => callback(err, null));*/
-                        console.time('Get share wating');
+                        console.time('Get share wating:');
                         setTimeout(() => {
-                            console.timeEnd('Get share wating');
+                            // console.timeEnd('Get share wating');
+                            console.log('Get share start:'+ new Date().toLocaleString());
                             getWapShare(url)
                                 .then((shareDate) => {
                                     if (shareDate == 'err' || shareDate == '') {
@@ -240,7 +228,7 @@ WapShareWorker.prototype = {
                                     }
                                 })
                                 .catch(err => callback(err, null));
-                        }, 600 + Math.round(Math.random() * 600));
+                        }, 1500 + Math.round(Math.random() * 1000));
                     }, (err, result) => {
                         "use strict";
                         if (err) throw err;
