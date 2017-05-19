@@ -8,7 +8,6 @@ let getUser = require('./save').getUser;
 let saveWapShare = require('./save').saveWapShare;
 let setShareFlag = require('./save').setShareFlag;
 let async = require('async');
-let log4js = require('log4js');
 let cheerio = require('cheerio');
 let errorUrl = require('./save').errorUrl;
 

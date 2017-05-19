@@ -98,8 +98,8 @@ let errorUrls = new ErrorUrls();
 let wapShareWorker = new WapShareWorker();
 let followWorker = new FollowWorker();
 let fansWorker = new FansWorker();
-followWorker.init();
-/*async.parallel([
+
+async.parallel([
     function () {
         wapShareWorker.init();
     },
@@ -116,7 +116,7 @@ followWorker.init();
     "use strict";
     if (err) throw err;
     console.log(result);
-});*/
+});
 
 /*getFollow('https://pan.baidu.com/pcloud/friend/getfollowlist?query_uk=3292618829&limit=24&start=1128&bdstoken=null&channel=chunlei&clienttype=0&web=1')
  .then((data)=>{
@@ -130,7 +130,7 @@ followWorker.init();
  saveFans(data);
  });*/
 
-/* getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=2689222095&start=460')
+/* getWapShare('https://pan.baidu.com/wap/share/home?third=0&uk=1514953214&start=18280')
  .then((data)=>{
  // console.log(data);
  saveWapShare(data);

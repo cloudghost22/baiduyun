@@ -56,7 +56,7 @@ let setShareFlag = function (uk, flag = 0) {
 //保存分享文件数据
 let saveShare = function (data) {
     let deferred = q.defer();
-    let saveSql = 'INSERT share(category,feed_time,isdir,server_filename,size,saveTime,shareid,shorturl,title,uk,username) VALUES ';
+    let saveSql = 'INSERT share_new(category,feed_time,isdir,server_filename,size,saveTime,shareid,shorturl,title,uk,username) VALUES ';
     let updateStr = '';
     for (let i of data) {
         let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' + i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.size + '\',\'' + i.saveTime + '\',\'' + i.shareid + '\',\'' + i.shorturl + '\',\'' + (i.title.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\\/g, '').replace(/\'/g, '') + '\'';
@@ -90,7 +90,7 @@ let saveShare = function (data) {
 
 let saveWapShare = function (data) {
     let deferred = q.defer();
-    let saveSql = 'INSERT share(category,feed_time,isdir,server_filename,size,saveTime,shareid,title,uk,username) VALUES ';
+    let saveSql = 'INSERT share_new(category,feed_time,isdir,server_filename,size,saveTime,shareid,title,uk,username) VALUES ';
     let updateStr = '';
     let _saveTime = (new Date()).valueOf();
     for (let i of data) {
