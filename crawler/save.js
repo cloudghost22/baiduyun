@@ -95,7 +95,7 @@ let saveWapShare = function (data) {
     let updateStr = '';
     let _saveTime = (new Date()).valueOf();
     for (let i of data) {
-        if (i.length>0 && i.server_filename.length > 0) {
+        if (i && i.server_filename.length > 0) {
             let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' ;
             if(i.server_filename){
                 temp += i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.size + '\',\'';
