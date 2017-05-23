@@ -27,7 +27,7 @@ let saveWapShare = require('./crawler/save').saveWapShare;
 let getWapShare = require('./crawler/wapFetch').getWapShare;
 let getWapAlbumShare = require('./crawler/wapFetch').getWapAlbumShare;
 
-let ErrorUrls = function () {
+/*let ErrorUrls = function () {
     let self = this;
 };
 ErrorUrls.prototype = {
@@ -116,7 +116,7 @@ async.parallel([
     "use strict";
     if (err) throw err;
     console.log(result);
-});
+});*/
 
 /*getFollow('https://pan.baidu.com/pcloud/friend/getfollowlist?query_uk=3292618829&limit=24&start=1128&bdstoken=null&channel=chunlei&clienttype=0&web=1')
  .then((data)=>{
@@ -136,11 +136,11 @@ async.parallel([
  saveWapShare(data);
  });*/
 
-/*getWapAlbumShare('https://pan.baidu.com/wap/album/info?uk=2989869023&third=0&album_id=830678569074082690')
+getWapAlbumShare('https://pan.baidu.com/wap/album/info?uk=3695839711&third=0&album_id=7766940079628821719')
  .then((data)=>{
  // console.log(data);
  saveWapShare(data);
- });*/
+ });
 
 /*let wapShareWorker = new WapShareWorker();
  wapShareWorker.init();*/

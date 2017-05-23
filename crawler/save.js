@@ -89,12 +89,13 @@ let saveShare = function (data) {
 };
 
 let saveWapShare = function (data) {
+    // console.log(data);
     let deferred = q.defer();
     let saveSql = 'INSERT share_new(category,feed_time,isdir,server_filename,size,saveTime,shareid,title,uk,username) VALUES ';
     let updateStr = '';
     let _saveTime = (new Date()).valueOf();
     for (let i of data) {
-        if (i) {
+        if (i.length>0 && i.server_filename.length > 0) {
             let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' ;
             if(i.server_filename){
                 temp += i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.size + '\',\'';
@@ -111,7 +112,6 @@ let saveWapShare = function (data) {
                 updateStr += temp;
             }
         }
-        // console.log(temp);
     }
     saveSql += updateStr + ';';
     // console.log(saveSql);
