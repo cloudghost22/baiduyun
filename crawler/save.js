@@ -116,7 +116,7 @@ let saveWapShare = function (data) {
         }
     }
     saveSql += updateStr + ';';
-    console.log(saveSql);
+    // console.log(saveSql);
     pool.getConnection((err, conn) => {
         "use strict";
         conn.release();
