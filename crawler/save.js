@@ -95,7 +95,9 @@ let saveWapShare = function (data) {
     let updateStr = '';
     let _saveTime = (new Date()).valueOf();
     for (let i of data) {
-        if (i && i.server_filename.length > 0) {
+/*        console.log(i);
+        console.log(typeof(i.server_filename) != 'undefined');*/
+        if (i && typeof(i.server_filename) != 'undefined') {
             let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' ;
             if(i.server_filename){
                 temp += i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.size + '\',\'';
@@ -114,7 +116,7 @@ let saveWapShare = function (data) {
         }
     }
     saveSql += updateStr + ';';
-    // console.log(saveSql);
+    console.log(saveSql);
     pool.getConnection((err, conn) => {
         "use strict";
         conn.release();

@@ -136,7 +136,7 @@ async.parallel([
  saveWapShare(data);
  });*/
 
-getWapAlbumShare('https://pan.baidu.com/wap/album/info?uk=4096565987&third=0&album_id=9131447026707660092')
+getWapAlbumShare('https://pan.baidu.com/wap/album/info?uk=3695839711&third=0&album_id=7766940079628821719 ')
  .then((data)=>{
  // console.log(data);
  saveWapShare(data);
