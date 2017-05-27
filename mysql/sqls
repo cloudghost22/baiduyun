@@ -12,6 +12,9 @@ CREATE TABLE `users` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 ALTER table users add INDEX idx_uk(uk);
+ALTER table users add INDEX idx_sharecount(pubsharecount);
+ALTER table users add INDEX idx_fanscount(fanscount);
+ALTER table users add INDEX idx_followcount(followcount);
 
 CREATE TABLE `share` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
