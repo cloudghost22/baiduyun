@@ -40,6 +40,14 @@ CREATE TABLE `errorurls` (
   PRIMARY KEY (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE TABLE `album` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `url` varchar(512) DEFAULT NULL,
+  `flag` tinyint(4) DEFAULT '0',
+  `timeStamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 ALTER TABLE share ADD FULLTEXT INDEX ft_index (title) WITH PARSER ngram;
 
 CREATE  VIEW `v_fetcheduser` AS select `users`.`uk` AS `uk` from `users` where (`users`.`shareFlag` = 1);

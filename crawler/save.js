@@ -273,6 +273,37 @@ let updateErrorUrls = function (IDs) {
     return deferred.promise;
 };
 
+let albumUrl = function (urls) {
+    let deferred = q.defer();
+    let saveSql = 'INSERT into album(url) VALUES ';
+    let updateStr = '';
+    for (let i of urls) {
+        let temp = '\'' + i.substr(0, 512) + '\'';
+        temp = '(' + temp + ')';
+        if (updateStr) {
+            updateStr += ',' + temp;
+        } else {
+            updateStr += temp;
+        }
+    }
+    saveSql += updateStr + ';';
+    console.log('saveSql' + saveSql);
+    pool.getConnection((err, conn) => {
+        "use strict";
+        conn.release();
+        if (err) deferred.reject(err);
+        conn.query(saveSql, (err, result) => {
+            if (err) {
+                console.log('Saving album error,sql is:' + saveSql);
+                deferred.resolve();
+            } else {
+                deferred.resolve(result.affectedRows);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 module.exports.getUser = getUser;
 module.exports.saveShare = saveShare;
 module.exports.setShareFlag = setShareFlag;
@@ -282,3 +313,4 @@ module.exports.saveWapShare = saveWapShare;
 module.exports.errorUrl = errorUrl;
 module.exports.getErrorUrls = getErrorUrls;
 module.exports.updateErrorUrls = updateErrorUrls;
+module.exports.albumUrl = albumUrl;

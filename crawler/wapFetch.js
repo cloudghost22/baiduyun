@@ -10,6 +10,7 @@ let setShareFlag = require('./save').setShareFlag;
 let async = require('async');
 let cheerio = require('cheerio');
 let errorUrl = require('./save').errorUrl;
+let albumUrlSave = require('./save').albumUrl;
 
 let setTime = 5000 + Math.round(Math.random() * 1000);
 //###########http header#########
@@ -35,6 +36,7 @@ let getWapShareTasks = function (uk, total) {
 };
 
 let errorUrlsArr = [];
+let album = [];
 let getWapShare = function (url) {
     let deferred = q.defer();
     console.log('Getting wap share,url is:' + url);
@@ -144,7 +146,7 @@ let parseWapShareJson = function (json) {
             shareObj = {};
         } else if (json.records[i].feed_type == 'album') {
             let albumUrl = `https://pan.baidu.com/wap/album/info?uk=${json.records[i].uk}&third=0&album_id=${json.records[i].album_id}`;
-            errorUrl(new Array(albumUrl));
+            albumUrlSave(new Array(albumUrl));
         }
     }
     // console.log(userShare);
