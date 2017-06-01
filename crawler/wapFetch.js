@@ -11,6 +11,7 @@ let async = require('async');
 let cheerio = require('cheerio');
 let errorUrl = require('./save').errorUrl;
 
+let setTime = 5000 + Math.round(Math.random() * 1000);
 //###########http header#########
 let options = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -36,15 +37,15 @@ let getWapShareTasks = function (uk, total) {
 let errorUrlsArr = [];
 let getWapShare = function (url) {
     let deferred = q.defer();
-    console.log('getWapShare:' + url);
+    console.log('Getting wap share,url is:' + url);
     superagent
         .get(url)
         .set(options)
         .end((err, res) => {
             "use strict";
             if (err) {
-                // console.log(err);
-                console.log('error url is:' + url);
+                console.log(err);
+                console.log('Getting wap share error,url is:' + url);
                 errorUrlsArr.push(url);
                 if (errorUrlsArr.length > 10) {
                     // console.log('errorUrlsArr length:'+errorUrlsArr.length);
@@ -55,15 +56,15 @@ let getWapShare = function (url) {
             }
             try {
                 // console.log(res.text);
-                let $ = cheerio.load(res.text);
-                let temp = $('script')[16].children[0].data;
+                let tempStr = res.text.substring(res.text.indexOf('window.yunData'));
+                let temp = tempStr.substring(0,tempStr.indexOf('</script>'));
                 temp = temp.replace(/ /g, '');
-                temp = temp.substring(temp.indexOf('{"'), temp.indexOf('}();') - 2);
+                temp = temp.substring(temp.indexOf('{"'), temp.indexOf('};')+1);
                 temp = eval("(" + temp + ")");
-                // console.log(temp.feedata.records[0]);
                 deferred.resolve(parseWapShareJson(temp.feedata));
             } catch (e) {
-                console.log('error url is:' + url);
+                // console.log(e);
+                console.log('Getting wap share error,url is:' + url);
                 errorUrlsArr.push(url);
                 if (errorUrlsArr.length > 10) {
                     // console.log('errorUrlsArr length:'+errorUrlsArr.length);
@@ -78,7 +79,7 @@ let getWapShare = function (url) {
 
 let getWapAlbumShare = function (url) {
     let deferred = q.defer();
-    console.log('getWapShare:' + url);
+    console.log('Getting the share link:' + url);
     superagent
         .get(url)
         .set(options)
@@ -86,7 +87,7 @@ let getWapAlbumShare = function (url) {
             "use strict";
             if (err) {
                 console.log('err:' + err);
-                console.log('error url is:' + url);
+                console.log('Getting share error,url is:' + url);
                 errorUrlsArr.push(url);
                 if (errorUrlsArr.length > 10) {
                     // console.log('errorUrlsArr length:'+errorUrlsArr.length);
@@ -97,17 +98,16 @@ let getWapAlbumShare = function (url) {
             }
             try {
                 // console.log('res:'+res.text);
-                let $ = cheerio.load(res.text);
-                let temp = $('script')[12].children[0].data;
+                let tempStr = res.text.substring(res.text.indexOf('window.yunData'));
+                let temp = tempStr.substring(0,tempStr.indexOf('</script>'));
                 temp = temp.replace(/ /g, '');
-                temp = temp.substring(temp.indexOf('{"'), temp.indexOf('}();') - 2);
-                // console.log(temp);
+                temp = temp.substring(temp.indexOf('{"'), temp.indexOf('};')+1);
                 temp = eval("(" + temp + ")");
                 // console.log('temp.albumlist.count:' + temp.albumlist.count);
                 deferred.resolve(parseWapAlbumShareJson(temp));
             } catch (e) {
-                // console.log('e:'+e);
-                console.log('error url is:' + url);
+                console.log('e:'+e);
+                console.log('Getting share error,url is:' + url);
                 errorUrlsArr.push(url);
                 if (errorUrlsArr.length > 10) {
                     // console.log('errorUrlsArr length:'+errorUrlsArr.length);
@@ -208,7 +208,7 @@ WapShareWorker.prototype = {
                     }).catch(err => callback(err, null));
                 } else {
                     //根据用户数据生成连接
-                    console.log('getWapShareTasks');
+                    console.log('Begin to generate wap share tasks.');
                     let urls = getWapShareTasks(user[0].uk, user[0].pubshareCount);
                     // console.log(urls);
                     async.mapLimit(urls, 1, (url, callback) => {
@@ -216,7 +216,7 @@ WapShareWorker.prototype = {
                         console.time('Get share wating:');
                         setTimeout(() => {
                             // console.timeEnd('Get share wating');
-                            console.log('Get share start:'+ new Date().toLocaleString());
+                            console.log('Getting share start:'+ new Date().toLocaleString());
                             getWapShare(url)
                                 .then((shareDate) => {
                                     if (shareDate == 'err' || shareDate == '') {
@@ -227,7 +227,7 @@ WapShareWorker.prototype = {
                                     }
                                 })
                                 .catch(err => callback(err, null));
-                        }, 1500 + Math.round(Math.random() * 1000));
+                        }, setTime);
                     }, (err, result) => {
                         "use strict";
                         if (err) throw err;

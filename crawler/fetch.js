@@ -11,6 +11,9 @@ let saveFollow = require('./save').saveFollow;
 let saveFans = require('./save').saveFans;
 let setShareFlag = require('./save').setShareFlag;
 let async = require('async');
+
+let setTime = 5000 + Math.round(Math.random() * 1000);
+
 /*let log4js = require('log4js');
 
 //日志设置
@@ -62,7 +65,7 @@ ShareWorker.prototype = {
                     async.mapLimit(urls, 1, (url, callback) => {
                         "use strict";
                         console.time('Get share wating');
-                        sleeptime(1500 + Math.round(Math.random() * 1000));
+                        sleeptime(setTime);
                         console.timeEnd('Get share wating');
                         if(++shareCounter == 9){
                             console.log('Get share sleep 2min');
@@ -175,16 +178,16 @@ FollowWorker.prototype = {
                     .catch(err => console.log(err));
             } else {
                 //根据用户数据生成连接
-                console.log('getFollowTasks');
+                console.log('Begin to generate the follow tasks.');
                 let urls = getFollowTasks(user[0].uk, user[0].followCount);
                 // console.log(urls);
                 async.mapLimit(urls, 1, (url, callback) => {
                     "use strict";
                     setTimeout(()=>{
-                        console.log('Get follow start:' + new Date().toLocaleString());
+                        console.log('Getting follow start:' + new Date().toLocaleString());
                         getFollow(url)
                             .then((followDate) => {
-                                console.log('saveFollow');
+                                console.log('Saving the follow');
                                 if (followDate == 'err') {
                                     callback(null, null);
                                 } else {
@@ -195,7 +198,7 @@ FollowWorker.prototype = {
                                 }
                             })
                             .catch(err => callback(err, null));
-                    },1500 + Math.round(Math.random() * 1000));
+                    },setTime);
                 }, (err, result) => {
                     "use strict";
                     if (err) throw err;
@@ -230,7 +233,7 @@ let getFollowTasks = function (uk, total) {
 
 //获取订阅数据
 let getFollow = function (url) {
-    console.log(url);
+    console.log('Getting the follow url is:'+url);
     let deferred = q.defer();
     let uk = url.slice(url.indexOf('query_uk=') + 9, url.indexOf('&limit'));
     options.Referer = `https://pan.baidu.com/pcloud/friendpage?type=follow&uk=${uk}&self=0`;
@@ -306,7 +309,7 @@ FansWorker.prototype = {
 
                             })
                             .catch(err => callback(err, null));
-                    },1500 + Math.round(Math.random() * 1000));
+                    },setTime);
                 }, (err, result) => {
                     "use strict";
                     if (err) throw err;
@@ -339,7 +342,7 @@ let getFansTasks = function (uk, total) {
 
 //获取粉丝数据
 let getFans = function (url) {
-    console.log(url);
+    console.log('Getting fans url is:'+url);
     let deferred = q.defer();
     let uk = url.slice(url.indexOf('query_uk=') + 9, url.indexOf('&limit'));
     options.Referer = `https://pan.baidu.com/pcloud/friendpage?type=fans&uk=${uk}&self=0`;

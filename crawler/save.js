@@ -123,7 +123,7 @@ let saveWapShare = function (data) {
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
             if (err) {
-                console.log('error:' + saveSql);
+                console.log('Saving wap share error,sql is:' + saveSql);
                 deferred.resolve();
             } else {
                 deferred.resolve(result.affectedRows);
@@ -156,7 +156,7 @@ let saveFollow = function (data) {
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
             if (err) {
-                console.log('error:' + saveSql);
+                console.log('Saving follow error,sql is:' + saveSql);
                 deferred.resolve();
             } else {
                 deferred.resolve(result.affectedRows);
@@ -189,7 +189,7 @@ let saveFans = function (data) {
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
             if (err) {
-                console.log('error:' + saveSql);
+                console.log('Saving fans error,sql is:' + saveSql);
                 deferred.resolve();
             } else {
                 deferred.resolve(result.affectedRows);
@@ -220,7 +220,7 @@ let errorUrl = function (urls) {
         if (err) deferred.reject(err);
         conn.query(saveSql, (err, result) => {
             if (err) {
-                console.log('error:' + saveSql);
+                console.log('Saving errorurls error,sql is:' + saveSql);
                 deferred.resolve();
             } else {
                 deferred.resolve(result.affectedRows);
@@ -239,7 +239,7 @@ let getErrorUrls = function () {
         if (err) deferred.reject(err);
         conn.query(sql, (err, result) => {
             if (err) {
-                console.log('error:' + getErrorUrls);
+                console.log('getErrorUrls error:' + getErrorUrls);
                 deferred.resolve();
             } else {
                 deferred.resolve(result);
@@ -263,7 +263,7 @@ let updateErrorUrls = function (IDs) {
         if (err) deferred.reject(err);
         conn.query(sql, (err, result) => {
             if (err) {
-                console.log('error:' + updateErrorUrls);
+                console.log('updateErrorUrls error:' + updateErrorUrls);
                 deferred.resolve();
             } else {
                 deferred.resolve(result);
