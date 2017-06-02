@@ -26,11 +26,15 @@ let getFansTasks = require('./crawler/fetch').getFansTasks;
 let saveWapShare = require('./crawler/save').saveWapShare;
 let getWapShare = require('./crawler/wapFetch').getWapShare;
 let getWapAlbumShare = require('./crawler/wapFetch').getWapAlbumShare;
+let WapShareUpdateWorker = require('./crawler/updateShare').WapShareUpdateWorker;
 
 //set the time
 let setTime = 5000 + Math.round(Math.random() * 1000);
 
-//####################################################################################################
+let wapShareUpdateWorker = new WapShareUpdateWorker();
+wapShareUpdateWorker.init();
+
+/*//####################################################################################################
 let ErrorUrls = function () {
     let self = this;
 };
@@ -123,7 +127,9 @@ async.parallel([
 });
 
 
-//####################################################################################################
+//####################################################################################################*/
+
+
 
 /*getFollow('https://pan.baidu.com/pcloud/friend/getfollowlist?query_uk=3292618829&limit=24&start=1128&bdstoken=null&channel=chunlei&clienttype=0&web=1')
  .then((data)=>{

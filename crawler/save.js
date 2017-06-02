@@ -88,10 +88,10 @@ let saveShare = function (data) {
     return deferred.promise;
 };
 
-let saveWapShare = function (data) {
+let saveWapShare = function (data,table = 'share_new') {
     // console.log(data);
     let deferred = q.defer();
-    let saveSql = 'INSERT share_new(category,feed_time,isdir,server_filename,size,saveTime,shareid,title,uk,username) VALUES ';
+    let saveSql = `INSERT ${table}(category,feed_time,isdir,server_filename,size,saveTime,shareid,title,uk,username) VALUES `;
     let updateStr = '';
     let _saveTime = (new Date()).valueOf();
     for (let i of data) {
@@ -304,6 +304,22 @@ let albumUrl = function (urls) {
     return deferred.promise;
 };
 
+//获取update的用户
+let getUpdateUser = function (offset = 0) {
+    console.log('Getting the update user...');
+    let queryStr = `SELECT id,uk from users order by pubshareCount desc LIMIT ${offset},100`;
+    let deferred = q.defer();
+    pool.getConnection((err, conn) => {
+        "use strict";
+        if (err) deferred.reject(err);
+        conn.query(queryStr, (err, result) => {
+            conn.release();
+            deferred.resolve(result);
+        });
+    });
+    return deferred.promise;
+};
+
 module.exports.getUser = getUser;
 module.exports.saveShare = saveShare;
 module.exports.setShareFlag = setShareFlag;
@@ -314,3 +330,4 @@ module.exports.errorUrl = errorUrl;
 module.exports.getErrorUrls = getErrorUrls;
 module.exports.updateErrorUrls = updateErrorUrls;
 module.exports.albumUrl = albumUrl;
+module.exports.getUpdateUser = getUpdateUser;
