@@ -307,7 +307,8 @@ let albumUrlSave = function (urls) {
 //获取update的用户
 let getUpdateUser = function (offset = 0) {
     console.log('Getting the update user...');
-    let queryStr = `SELECT id,uk from users order by pubshareCount desc LIMIT ${offset},10`;
+    let queryStr = `SELECT id,uk from users order by pubshareCount desc LIMIT ${offset},50`;
+    // console.log(queryStr);
     let deferred = q.defer();
     pool.getConnection((err, conn) => {
         "use strict";
@@ -336,7 +337,7 @@ let saveUpdateUsers = function (usersObj) {
         }
     }
     saveSql += updateStr + ';';
-    console.log('saveUpdateUsers save Sql' + saveSql);
+    // console.log('saveUpdateUsers save Sql' + saveSql);
     pool.getConnection((err, conn) => {
         "use strict";
         conn.release();
