@@ -65,17 +65,12 @@ CREATE TABLE `share_update` (
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `users_update` (
-  `ID` int(11) NOT NULL DEFAULT '0',
+  `ID` int(11) NOT NULL,
   `uk` decimal(12,0) DEFAULT NULL,
-  `userName` varchar(255) DEFAULT NULL,
-  `followCount` int(11) DEFAULT NULL,
-  `fansCount` int(11) DEFAULT NULL,
-  `pubshareCount` int(11) DEFAULT NULL,
-  `shareFlag` tinyint(4) DEFAULT '0',
-  `followFlag` tinyint(4) DEFAULT '0',
-  `fansFlag` tinyint(4) DEFAULT '0',
-  PRIMARY KEY (`ID`),
-  KEY `idx_sharecount` (`pubshareCount`)
+  `updateNumber` int(11) DEFAULT NULL,
+  `totalCount` int(11) DEFAULT NULL,
+  `updateTime` timestamp NULL DEFAULT NULL COMMENT 'CURRENT_TIMESTAMP',
+  PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
