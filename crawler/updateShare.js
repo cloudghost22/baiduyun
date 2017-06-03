@@ -8,9 +8,12 @@ let async = require('async');
 let cheerio = require('cheerio');
 let getUpdateUser = require('./save').getUpdateUser;
 let saveWapShare = require('./save').saveWapShare;
+let saveUpdateUsers = require('./save').saveUpdateUsers;
+let albumUrlSave = require('./save').albumUrl;
+let errorUrl = require('./save').errorUrl;
 
 //set the time
-let setTime = 5000 + Math.round(Math.random() * 1000);
+let setTime = 1000 + Math.round(Math.random() * 1000);
 //###########http header#########
 let options = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -22,13 +25,14 @@ let options = {
     'X-Requested-With': 'XMLHttpRequest'
 };
 
-let updateShareArr=[];
+let updateShareArr = [];
 let updateUserArr = [];
 let errorUrlsArr = [];
 let album = [];
 let updateNumber = 0;
 let start = 0;
-let updateDateFrom = Date.parse(new Date('2015-05-01'));
+let updateUserNumber = 0;
+let updateDateFrom = Date.parse(new Date('2017-04-28'));
 
 let getWapShareUpdate = function (url) {
     let deferred = q.defer();
@@ -52,9 +56,9 @@ let getWapShareUpdate = function (url) {
             try {
                 // console.log(res.text);
                 let tempStr = res.text.substring(res.text.indexOf('window.yunData'));
-                let temp = tempStr.substring(0,tempStr.indexOf('</script>'));
+                let temp = tempStr.substring(0, tempStr.indexOf('</script>'));
                 temp = temp.replace(/ /g, '');
-                temp = temp.substring(temp.indexOf('{"'), temp.indexOf('};')+1);
+                temp = temp.substring(temp.indexOf('{"'), temp.indexOf('};') + 1);
                 temp = eval("(" + temp + ")");
                 deferred.resolve(parseWapShareUpdateJson(temp.feedata));
             } catch (e) {
@@ -74,7 +78,22 @@ let getWapShareUpdate = function (url) {
 
 //解析分享json
 let parseWapShareUpdateJson = function (json) {
-    // console.log(json);
+    let tempUk = json.records[0].uk;
+    let flagUK = false;
+    if (tempUk) {
+        for (let i of updateUserArr) {
+            if (i.uk == tempUk) {
+                flagUK = true;
+                break;
+            }
+        }
+    }
+    if (!flagUK) {
+        let updateUserObj = new Object();
+        updateUserObj.uk = tempUk;
+        updateUserObj.totalCount = json.total_count;
+        updateUserArr.push(updateUserObj);
+    }
     let userShare = [];
     let shareObj = {};
     for (let i = 0; i < json.records.length; i++) {
@@ -130,22 +149,25 @@ WapShareUpdateWorker.prototype = {
                     }).catch(err => callback(err, null));
                 } else {
                     let usersArr = [];
-                    for(let i of user){
+                    for (let i of user) {
                         usersArr.push(i);
                     }
                     // console.log(urls);
                     async.mapLimit(usersArr, 1, (u, callback) => {
                         "use strict";
-                        console.log('Getting share update start:'+ new Date().toLocaleString());
+                        console.log('Getting share update start:' + new Date().toLocaleString());
                         let url = `https://pan.baidu.com/wap/share/home?third=0&uk=${u.uk}&start=${start}`;
                         updateUserShare(url)
-                            .then(result=>callback(null,null))
-                            .catch(err=>callback(err,null));
+                            .then(result => {
+                                // console.log(result);
+                                callback(null, null);
+                            })
+                            .catch(err => callback(err, null));
                     }, (err, result) => {
                         "use strict";
                         if (err) throw err;
-                        console.log(`${user[0].uk} get share update is finish.`);
-                        setShareFlag(user[0].uk, 0).then(() => {
+                        console.log(`${updateNumber} share update is finish.`);
+                        saveUpdateUsers(updateUserArr).then(() => {
                             deferred.resolve(this.init());
                         }).catch(err => callback(err, null));
                     });
@@ -160,37 +182,52 @@ WapShareUpdateWorker.prototype = {
 let updateUserShare = function (url) {
     let deferred = q.defer();
     let originUrl = url;
-    setTimeout(()=>{
+    setTimeout(() => {
         getWapShareUpdate(url)
-            .then(shareDate=>{
-                //console.log(shareDate);
+            .then((shareDate) => {
+                // console.log(shareDate);
                 if (shareDate == 'err' || shareDate == '') {
                     deferred.resolve('err');
                 } else {
-                    for(let i of shareDate){
-                        if(i.feed_time.toString().length == 13 && i.feed_time > updateDateFrom){
+                    for (let i of shareDate) {
+                        if (i.feed_time.toString().length == 13 && i.feed_time > updateDateFrom) {
                             updateShareArr.push(i);
-                        }else if(i.feed_time.toString().length == 10 && i.feed_time > (updateDateFrom/1000)){
+                            updateUserNumber += 1;
+                        } else if (i.feed_time.toString().length == 10 && i.feed_time > (updateDateFrom / 1000)) {
                             updateShareArr.push(i);
+                            updateUserNumber += 1;
+
                         }
                     }
-                    if(updateShareArr.length >  100){
-                        console.log('save');
-                        saveWapShare(updateShareArr);
+                    if (updateShareArr.length > 100) {
+                        console.log('Save share update...');
+                        saveWapShare(updateShareArr, 'share_update');
+                        updateShareArr = [];
                     }
-                    if(shareDate[19].feed_time.toString() > updateDateFrom){
+                    if (shareDate[19].feed_time.toString() > updateDateFrom) {
                         start += 20;
-                        let uk = originUrl.substring(originUrl.indexOf('uk=')+3,originUrl.indexOf('&start'));
+                        let uk = originUrl.substring(originUrl.indexOf('uk=') + 3, originUrl.indexOf('&start'));
                         let url = `https://pan.baidu.com/wap/share/home?third=0&uk=${uk}&start=${start}`;
-                        updateUserShare(url);
-                    }else {
+                        updateUserShare(url)
+                            .then(res=>{
+                                deferred.resolve('ok');
+                            });
+                    } else {
                         start = 0;
+                        let uk = originUrl.substring(originUrl.indexOf('uk=') + 3, originUrl.indexOf('&start'));
+                        for (let i = updateUserArr.length - 1; i >= 0; i--) {
+                            if (updateUserArr[i].uk == uk) {
+                                updateUserArr[i].updateNumber = updateUserNumber;
+                                break;
+                            }
+                        }
+                        updateUserNumber = 0;
                         deferred.resolve('ok');
                     }
                 }
             })
-            .catch(err=>console.log(err));
-    },setTime);
+            .catch(err => console.log(err));
+    }, setTime);
     return deferred.promise;
 };
 

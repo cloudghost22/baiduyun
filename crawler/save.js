@@ -273,7 +273,7 @@ let updateErrorUrls = function (IDs) {
     return deferred.promise;
 };
 
-let albumUrl = function (urls) {
+let albumUrlSave = function (urls) {
     let deferred = q.defer();
     let saveSql = 'INSERT into album(url) VALUES ';
     let updateStr = '';
@@ -287,7 +287,7 @@ let albumUrl = function (urls) {
         }
     }
     saveSql += updateStr + ';';
-    console.log('saveSql' + saveSql);
+    // console.log('saveSql' + saveSql);
     pool.getConnection((err, conn) => {
         "use strict";
         conn.release();
@@ -320,6 +320,39 @@ let getUpdateUser = function (offset = 0) {
     return deferred.promise;
 };
 
+//save the update users
+//获取update的用户
+let saveUpdateUsers = function (usersObj) {
+    let deferred = q.defer();
+    let saveSql = 'INSERT INTO users_update(uk,updateNumber,totalCount) VALUES ';
+    let updateStr = '';
+    for (let i of usersObj) {
+        let temp = '\'' + i.uk + '\',\'' + i.updateNumber + '\',\'' + i.totalCount + '\'';
+        temp = '(' + temp + ')';
+        if (updateStr) {
+            updateStr += ',' + temp;
+        } else {
+            updateStr += temp;
+        }
+    }
+    saveSql += updateStr + ';';
+    console.log('saveUpdateUsers save Sql' + saveSql);
+    pool.getConnection((err, conn) => {
+        "use strict";
+        conn.release();
+        if (err) deferred.reject(err);
+        conn.query(saveSql, (err, result) => {
+            if (err) {
+                console.log('Saving errorurls error,sql is:' + saveSql);
+                deferred.resolve();
+            } else {
+                deferred.resolve(result.affectedRows);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 module.exports.getUser = getUser;
 module.exports.saveShare = saveShare;
 module.exports.setShareFlag = setShareFlag;
@@ -329,5 +362,6 @@ module.exports.saveWapShare = saveWapShare;
 module.exports.errorUrl = errorUrl;
 module.exports.getErrorUrls = getErrorUrls;
 module.exports.updateErrorUrls = updateErrorUrls;
-module.exports.albumUrl = albumUrl;
+module.exports.albumUrlSave = albumUrlSave;
 module.exports.getUpdateUser = getUpdateUser;
+module.exports.saveUpdateUsers = saveUpdateUsers;
