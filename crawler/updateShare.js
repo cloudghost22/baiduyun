@@ -168,6 +168,7 @@ WapShareUpdateWorker.prototype = {
                         if (err) throw err;
                         console.log(`${updateNumber} share update is finish.`);
                         saveUpdateUsers(updateUserArr).then(() => {
+                            updateUserArr = [];
                             deferred.resolve(this.init());
                         }).catch(err => callback(err, null));
                     });
