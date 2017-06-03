@@ -34,6 +34,7 @@ let setTime = 5000 + Math.round(Math.random() * 1000);
 
 let wapShareUpdateWorker = new WapShareUpdateWorker();
 wapShareUpdateWorker.init();
+// getWapShareUpdate('https://pan.baidu.com/wap/share/home?uk=239727952&start=420').then(res=>console.log(res)).catch(err=>console.log(err));
 
 /*//####################################################################################################
 let ErrorUrls = function () {

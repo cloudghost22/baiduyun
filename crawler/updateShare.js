@@ -111,7 +111,7 @@ let parseWapShareUpdateJson = function (json) {
             shareObj.title = json.records[i].title;
             shareObj.uk = json.records[i].uk;
             shareObj.username = json.records[i].username;
-            userShare[i] = shareObj;
+            userShare.push(shareObj);
             shareObj = {};
         } else if (json.records[i].feed_type == 'album') {
             let albumUrl = `https://pan.baidu.com/wap/album/info?uk=${json.records[i].uk}&third=0&album_id=${json.records[i].album_id}`;
@@ -204,7 +204,7 @@ let updateUserShare = function (url) {
                         saveWapShare(updateShareArr, 'share_update');
                         updateShareArr = [];
                     }
-                    if (shareDate[19].feed_time.toString() > updateDateFrom) {
+                    if (shareDate[shareDate.length-1].feed_time.toString() > updateDateFrom) {
                         start += 20;
                         let uk = originUrl.substring(originUrl.indexOf('uk=') + 3, originUrl.indexOf('&start'));
                         let url = `https://pan.baidu.com/wap/share/home?third=0&uk=${uk}&start=${start}`;
