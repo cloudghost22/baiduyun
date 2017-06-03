@@ -9,7 +9,7 @@ let cheerio = require('cheerio');
 let getUpdateUser = require('./save').getUpdateUser;
 let saveWapShare = require('./save').saveWapShare;
 let saveUpdateUsers = require('./save').saveUpdateUsers;
-let albumUrlSave = require('./save').albumUrl;
+let albumUrlSave = require('./save').albumUrlSave;
 let errorUrl = require('./save').errorUrl;
 
 //set the time
