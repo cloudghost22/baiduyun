@@ -232,3 +232,4 @@ let updateUserShare = function (url) {
 };
 
 module.exports.WapShareUpdateWorker = WapShareUpdateWorker;
+module.exports.getWapShareUpdate = getWapShareUpdate;

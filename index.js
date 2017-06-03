@@ -27,6 +27,7 @@ let saveWapShare = require('./crawler/save').saveWapShare;
 let getWapShare = require('./crawler/wapFetch').getWapShare;
 let getWapAlbumShare = require('./crawler/wapFetch').getWapAlbumShare;
 let WapShareUpdateWorker = require('./crawler/updateShare').WapShareUpdateWorker;
+let getWapShareUpdate = require('./crawler/updateShare').getWapShareUpdate;
 
 //set the time
 let setTime = 5000 + Math.round(Math.random() * 1000);
