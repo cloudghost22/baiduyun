@@ -22,7 +22,7 @@ CREATE TABLE `share` (
   `feed_time` decimal(13,0) DEFAULT NULL,
   `isdir` tinyint(4) DEFAULT NULL,
   `server_filename` varchar(1024) DEFAULT NULL,
-  `size` decimal(10,0) unsigned DEFAULT NULL,
+  `size` decimal(18,0) unsigned DEFAULT NULL,
   `saveTime` decimal(13,0) DEFAULT NULL,
   `shareid` decimal(18,0) DEFAULT NULL,
   `shorturl` char(8) DEFAULT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE `share_update` (
   `feed_time` decimal(13,0) DEFAULT NULL,
   `isdir` tinyint(4) DEFAULT NULL,
   `server_filename` varchar(1024) DEFAULT NULL,
-  `size` decimal(10,0) unsigned DEFAULT NULL,
+  `size` decimal(18,0) unsigned DEFAULT NULL,
   `saveTime` decimal(13,0) DEFAULT NULL,
   `shareid` decimal(18,0) DEFAULT NULL,
   `shorturl` char(8) DEFAULT NULL,
@@ -90,7 +90,21 @@ CREATE TABLE `users_new` (
   KEY `idx_followcount` (`followCount`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+CREATE TABLE `share_new` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `category` tinyint(4) DEFAULT NULL,
+  `feed_time` decimal(13,0) DEFAULT NULL,
+  `isdir` tinyint(4) DEFAULT NULL,
+  `server_filename` varchar(1024) DEFAULT NULL,
+  `size` decimal(18,0) unsigned DEFAULT NULL,
+  `saveTime` decimal(13,0) DEFAULT NULL,
+  `shareid` decimal(18,0) DEFAULT NULL,
+  `shorturl` char(8) DEFAULT NULL,
+  `title` varchar(1024) DEFAULT NULL,
+  `uk` decimal(12,0) DEFAULT NULL,
+  `username` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 ALTER TABLE share ADD FULLTEXT INDEX ft_index (title) WITH PARSER ngram;
 
