@@ -29,7 +29,7 @@ let updateShareArr = [];
 let updateUserArr = [];
 let errorUrlsArr = [];
 let album = [];
-let updateNumber = 0;
+let updateNumber = 49199;
 let start = 0;
 let updateUserNumber = 0;
 let updateDateFrom = Date.parse(new Date('2017-04-28'));
@@ -155,6 +155,7 @@ WapShareUpdateWorker.prototype = {
                     // console.log(urls);
                     async.mapLimit(usersArr, 1, (u, callback) => {
                         "use strict";
+                        start = 0;
                         console.log('Getting share update start:' + new Date().toLocaleString());
                         let url = `https://pan.baidu.com/wap/share/home?third=0&uk=${u.uk}&start=${start}`;
                         updateUserShare(url)

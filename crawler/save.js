@@ -328,6 +328,9 @@ let saveUpdateUsers = function (usersObj) {
     let saveSql = 'INSERT INTO users_update(uk,updateNumber,totalCount) VALUES ';
     let updateStr = '';
     for (let i of usersObj) {
+        if(typeof(i.updateNumber) == 'undefined'){
+            i.updateNumber = 0;
+        }
         let temp = '\'' + i.uk + '\',\'' + i.updateNumber + '\',\'' + i.totalCount + '\'';
         temp = '(' + temp + ')';
         if (updateStr) {
