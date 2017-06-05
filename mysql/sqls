@@ -65,7 +65,7 @@ CREATE TABLE `share_update` (
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `users_update` (
-  `ID` int(11) NOT NULL,
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
   `uk` decimal(12,0) DEFAULT NULL,
   `updateNumber` int(11) DEFAULT NULL,
   `totalCount` int(11) DEFAULT NULL,
@@ -74,7 +74,7 @@ CREATE TABLE `users_update` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `users_new` (
-  `ID` int(11) NOT NULL DEFAULT '0',
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
   `uk` decimal(12,0) DEFAULT NULL,
   `userName` varchar(255) DEFAULT NULL,
   `followCount` int(11) DEFAULT NULL,

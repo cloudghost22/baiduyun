@@ -290,6 +290,7 @@ FansWorker.prototype = {
 
             } else {
                 //根据用户数据生成连接
+                console.log('Begin to generate the fans tasks.');
                 let urls = getFansTasks(user[0].uk, user[0].fansCount);
                 async.mapLimit(urls, 1, (url, callback) => {
                     "use strict";

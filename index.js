@@ -32,6 +32,18 @@ let getWapShareUpdate = require('./crawler/updateShare').getWapShareUpdate;
 //set the time
 let setTime = 5000 + Math.round(Math.random() * 1000);
 
+let wapShareWorker = new WapShareWorker();
+let followWorker = new FollowWorker();
+// let fansWorker = new FansWorker();
+
+
+wapShareWorker.init();
+
+followWorker.init();
+
+// fansWorker.init();
+
+
 let wapShareUpdateWorker = new WapShareUpdateWorker();
 wapShareUpdateWorker.init();
 // getWapShareUpdate('https://pan.baidu.com/wap/share/home?uk=1426671309&start=0').then(res=>console.log(res)).catch(err=>console.log(err));
