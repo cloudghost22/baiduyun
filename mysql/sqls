@@ -73,6 +73,24 @@ CREATE TABLE `users_update` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `users_new` (
+  `ID` int(11) NOT NULL DEFAULT '0',
+  `uk` decimal(12,0) DEFAULT NULL,
+  `userName` varchar(255) DEFAULT NULL,
+  `followCount` int(11) DEFAULT NULL,
+  `fansCount` int(11) DEFAULT NULL,
+  `pubshareCount` int(11) DEFAULT NULL,
+  `shareFlag` tinyint(4) DEFAULT '0',
+  `followFlag` tinyint(4) DEFAULT '0',
+  `fansFlag` tinyint(4) DEFAULT '0',
+  PRIMARY KEY (`ID`),
+  KEY `idx_sharecount` (`pubshareCount`),
+  KEY `idx_uk` (`uk`),
+  KEY `idx_fanscount` (`fansCount`),
+  KEY `idx_followcount` (`followCount`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 ALTER TABLE share ADD FULLTEXT INDEX ft_index (title) WITH PARSER ngram;
 

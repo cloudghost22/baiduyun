@@ -14,7 +14,7 @@ let getUser = function (flag = 0) {
     let arr = ['pubshareCount', 'followCount', 'fansCount'];
     let flagArr = ['shareFlag', 'followFlag', 'fansFlag'];
     let queryStr = [
-        `select * from users where shareFlag = 0 and not EXISTS(select 1 from v_fetcheduser where v_fetcheduser.uk = users.uk) order by pubshareCount desc LIMIT 1;`,
+        `select * from users where shareFlag = 0 and not EXISTS(select 1 from v_fetcheduser where v_fetcheduser.uk = users.uk) and  pubshareCount > 0 LIMIT 1;`,
         `select * from users where followFlag = 0 and not EXISTS(select 1 from v_followeduser where v_followeduser.uk = users.uk) order by followCount desc LIMIT 1;`,
         `select * from users where fansFlag = 0 and not EXISTS(select 1 from v_fanseduser where v_fanseduser.uk = users.uk) order by fansCount desc LIMIT 1;`
     ];
@@ -137,7 +137,7 @@ let saveWapShare = function (data,table = 'share_new') {
 //保存订阅用户数据
 let saveFollow = function (data) {
     let deferred = q.defer();
-    let saveSql = 'insert into users(uk,userName,followCount,fansCount,pubShareCount) values';
+    let saveSql = 'insert into users_new(uk,userName,followCount,fansCount,pubShareCount) values';
     let updateStr = '';
     for (let i of data) {
         let temp = '\'' + i.uk + '\',\'' + (i.userName.replace(/\'/g, '').replace(/\\/g, '')).substr(0, 255) + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';
@@ -170,7 +170,7 @@ let saveFollow = function (data) {
 //保存fans用户数据
 let saveFans = function (data) {
     let deferred = q.defer();
-    let saveSql = 'insert into users(uk,userName,followCount,fansCount,pubShareCount) values';
+    let saveSql = 'insert into users_new(uk,userName,followCount,fansCount,pubShareCount) values';
     let updateStr = '';
     for (let i of data) {
         let temp = '\'' + i.uk + '\',\'' + (i.userName.replace(/\'/g, '\\\'')).substr(0, 512) + '\',\'' + i.followCount + '\',\'' + i.fansCount + '\',\'' + i.pubshareCount + '\'';

@@ -12,7 +12,7 @@ let cheerio = require('cheerio');
 let errorUrl = require('./save').errorUrl;
 let albumUrlSave = require('./save').albumUrl;
 
-let setTime = 5000 + Math.round(Math.random() * 1000);
+let setTime = 2000 + Math.round(Math.random() * 1000);
 //###########http header#########
 let options = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
