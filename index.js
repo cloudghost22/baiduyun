@@ -32,16 +32,15 @@ let getWapShareUpdate = require('./crawler/updateShare').getWapShareUpdate;
 //set the time
 let setTime = 5000 + Math.round(Math.random() * 1000);
 
-let wapShareWorker = new WapShareWorker();
+/*let wapShareWorker = new WapShareWorker();
 let followWorker = new FollowWorker();
-// let fansWorker = new FansWorker();
-
+let fansWorker = new FansWorker();
 
 wapShareWorker.init();
 
 followWorker.init();
 
-// fansWorker.init();
+fansWorker.init();*/
 
 
 let wapShareUpdateWorker = new WapShareUpdateWorker();

@@ -29,10 +29,10 @@ let updateShareArr = [];
 let updateUserArr = [];
 let errorUrlsArr = [];
 let album = [];
-let updateNumber = 52984;
+let updateNumber = 0;
 let start = 0;
 let updateUserNumber = 0;
-let updateDateFrom = Date.parse(new Date('2017-04-28'));
+let updateDateFrom = Date.parse(new Date('2007-04-28'));
 
 let getWapShareUpdate = function (url) {
     let deferred = q.defer();
@@ -201,7 +201,7 @@ let updateUserShare = function (url) {
 
                         }
                     }
-                    if (updateShareArr.length > 100) {
+                    if (updateShareArr.length > 10) {
                         console.log('Save share update...');
                         saveWapShare(updateShareArr, 'share_update');
                         updateShareArr = [];
