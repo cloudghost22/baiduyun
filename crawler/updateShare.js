@@ -43,7 +43,7 @@ let getWapShareUpdate = function (url) {
         .end((err, res) => {
             "use strict";
             if (err) {
-                console.log(err);
+                //console.log(err);
                 console.log('Getting wap share update error,url is:' + url);
                 errorUrlsArr.push(url);
                 if (errorUrlsArr.length > 10) {
@@ -62,7 +62,7 @@ let getWapShareUpdate = function (url) {
                 temp = eval("(" + temp + ")");
                 deferred.resolve(parseWapShareUpdateJson(temp.feedata));
             } catch (e) {
-                console.log(e);
+                //console.log(e);
                 console.log('Getting wap share update error,url is:' + url);
                 errorUrlsArr.push(url);
                 if (errorUrlsArr.length > 10) {
