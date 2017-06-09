@@ -12,7 +12,7 @@ let saveFans = require('./save').saveFans;
 let setShareFlag = require('./save').setShareFlag;
 let async = require('async');
 
-let setTime = 5000 + Math.round(Math.random() * 1000);
+let setTime = 3000 + Math.round(Math.random() * 1000);
 
 /*let log4js = require('log4js');
 

@@ -29,7 +29,7 @@ let updateShareArr = [];
 let updateUserArr = [];
 let errorUrlsArr = [];
 let album = [];
-let updateNumber = 0;
+let updateNumber = 9820;//115674
 let start = 0;
 let updateUserNumber = 0;
 let updateDateFrom = Date.parse(new Date('2007-04-28'));
@@ -180,7 +180,6 @@ WapShareUpdateWorker.prototype = {
     }
 };
 
-
 let updateUserShare = function (url) {
     let deferred = q.defer();
     let originUrl = url;
@@ -210,10 +209,22 @@ let updateUserShare = function (url) {
                         start += 20;
                         let uk = originUrl.substring(originUrl.indexOf('uk=') + 3, originUrl.indexOf('&start'));
                         let url = `https://pan.baidu.com/wap/share/home?third=0&uk=${uk}&start=${start}`;
-                        updateUserShare(url)
-                            .then(res=>{
-                                deferred.resolve('ok');
-                            });
+                        let shareTotal = 0;
+                        for (let i = updateUserArr.length - 1; i >= 0; i--) {
+                            if (updateUserArr[i].uk == uk) {
+                                shareTotal = updateUserArr[i].totalCount;
+                                break;
+                            }
+                        }
+                        if(shareTotal > start){
+                            updateUserShare(url)
+                                .then(res=>{
+                                    deferred.resolve('ok');
+                                });
+                        }else {
+                            deferred.resolve('ok');
+                        }
+
                     } else {
                         start = 0;
                         let uk = originUrl.substring(originUrl.indexOf('uk=') + 3, originUrl.indexOf('&start'));
