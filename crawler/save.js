@@ -14,9 +14,9 @@ let getUser = function (flag = 0) {
     let arr = ['pubshareCount', 'followCount', 'fansCount'];
     let flagArr = ['shareFlag', 'followFlag', 'fansFlag'];
     let queryStr = [
-        `select * from users where shareFlag = 0 and not EXISTS(select 1 from v_fetcheduser where v_fetcheduser.uk = users.uk) and  pubshareCount > 0 LIMIT 1;`,
-        `select * from users where followFlag = 0 and not EXISTS(select 1 from v_followeduser where v_followeduser.uk = users.uk) order by followCount desc LIMIT 1;`,
-        `select * from users where fansFlag = 0 and not EXISTS(select 1 from v_fanseduser where v_fanseduser.uk = users.uk) order by fansCount desc LIMIT 1;`
+        `select * from users where uk is not null and shareFlag = 0 and not EXISTS(select 1 from v_fetcheduser where v_fetcheduser.uk = users.uk) and  pubshareCount > 0 LIMIT 1;`,
+        `select * from users where uk is not null and followFlag = 0 and not EXISTS(select 1 from v_followeduser where v_followeduser.uk = users.uk) order by followCount desc LIMIT 1;`,
+        `select * from users where uk is not null and fansFlag = 0 and not EXISTS(select 1 from v_fanseduser where v_fanseduser.uk = users.uk) order by fansCount desc LIMIT 1;`
     ];
     let deferred = q.defer();
     pool.getConnection((err, conn) => {
@@ -307,8 +307,8 @@ let albumUrlSave = function (urls) {
 //获取update的用户
 let getUpdateUser = function (offset = 0) {
     console.log('Getting the update user...');
-    // let queryStr = `SELECT id,uk from users_new order by pubshareCount desc LIMIT ${offset},5`;
-    let queryStr = `SELECT id,uk from users_new where pubshareCount > 0 order by id  LIMIT ${offset},5`;
+    let queryStr = `SELECT id,uk from users where updateTime is null order by pubshareCount desc LIMIT ${offset},5`;
+    //let queryStr = `SELECT id,uk from users_new where pubshareCount > 0 order by id  LIMIT ${offset},5`;
     console.log('Query string:'+queryStr);
     let deferred = q.defer();
     pool.getConnection((err, conn) => {

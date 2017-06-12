@@ -106,10 +106,19 @@ CREATE TABLE `share_new` (
   PRIMARY KEY (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-ALTER TABLE share ADD FULLTEXT INDEX ft_index (title) WITH PARSER ngram;
+-- ALTER TABLE share ADD FULLTEXT INDEX ft_index (title) WITH PARSER ngram;
 
 CREATE  VIEW `v_fetcheduser` AS select `users`.`uk` AS `uk` from `users` where (`users`.`shareFlag` = 1);
 
 CREATE  VIEW `v_fanseduser` AS select `users`.`uk` AS `uk` from `users` where (`users`.`fansFlag` = 1);
 
 CREATE  VIEW `v_followeduser` AS select `users`.`uk` AS `uk` from `users` where (`users`.`followFlag` = 1);
+
+delete from share_new where id not in (select maxid from (select max(id) as maxid from share_new group by shareid) b);
+
+//查询表空间大小
+select concat(round(sum(data_length/1024/1024),2),'MB') as data_length_MB,concat(round(sum(index_length/1024/1024),2),'MB') as index_length_MB  from tables where  table_schema='baiduyun'  and table_name = 'share';
+
+//更新用户
+insert into users(username,followcount,fanscount,pubsharecount)
+select username,followcount,fanscount,pubsharecount from users_new

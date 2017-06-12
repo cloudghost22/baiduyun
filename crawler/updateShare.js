@@ -29,7 +29,8 @@ let updateShareArr = [];
 let updateUserArr = [];
 let errorUrlsArr = [];
 let album = [];
-let updateNumber = 9820;//115674
+// let updateNumber = 115674;
+let updateNumber = 0;
 let start = 0;
 let updateUserNumber = 0;
 let updateDateFrom = Date.parse(new Date('2007-04-28'));
@@ -200,7 +201,7 @@ let updateUserShare = function (url) {
 
                         }
                     }
-                    if (updateShareArr.length > 10) {
+                    if (updateShareArr.length > 40) {
                         console.log('Save share update...');
                         saveWapShare(updateShareArr, 'share_update');
                         updateShareArr = [];

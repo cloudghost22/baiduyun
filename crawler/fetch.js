@@ -29,6 +29,8 @@ let options = {
     'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.6,en;q=0.4',
     'Cache-Control':'no-cache',
     'Connection': 'close',
+    //'Cache-Control':'max-age=0',
+    //'Connection': 'keep-alive',
     'Host': 'pan.baidu.com',
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
     'X-Requested-With': 'XMLHttpRequest'
@@ -346,7 +348,7 @@ let getFans = function (url) {
     console.log('Getting fans url is:'+url);
     let deferred = q.defer();
     let uk = url.slice(url.indexOf('query_uk=') + 9, url.indexOf('&limit'));
-    options.Referer = `https://pan.baidu.com/pcloud/friendpage?type=fans&uk=${uk}&self=0`;
+    //options.Referer = `https://pan.baidu.com/pcloud/friendpage?type=fans&uk=${uk}&self=0`;
     superagent
         .get(url)
         .set(options)
@@ -356,7 +358,10 @@ let getFans = function (url) {
             try {
                 let json = JSON.parse(res.text);
                 let jsonTemp = parseFansJson(json);
-                if (jsonTemp == 'err') {
+                if (jsonTemp == '1'){
+                    deferred.resolve('err');
+                }
+                else if(jsonTemp == '-55') {
                     console.log(`${url} request error.`);
                     setTimeout(() => {
                         deferred.resolve('err');
@@ -399,7 +404,7 @@ let parseShareJson = function (json) {
         return userShare;
     } else {
         console.log(json.errno);
-        return 'err';
+        return json.errno;
     }
 
 };
