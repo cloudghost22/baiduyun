@@ -307,7 +307,7 @@ let albumUrlSave = function (urls) {
 //获取update的用户
 let getUpdateUser = function (offset = 0) {
     console.log('Getting the update user...');
-    let queryStr = `SELECT id,uk from users where updateTime is null order by pubshareCount desc LIMIT ${offset},5`;
+    let queryStr = `SELECT id,uk,shareFlag from users where updateTime is null order by pubshareCount desc LIMIT ${offset},5`;
     //let queryStr = `SELECT id,uk from users_new where pubshareCount > 0 order by id  LIMIT ${offset},5`;
     console.log('Query string:'+queryStr);
     let deferred = q.defer();

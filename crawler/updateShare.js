@@ -157,6 +157,12 @@ WapShareUpdateWorker.prototype = {
                     async.mapLimit(usersArr, 1, (u, callback) => {
                         "use strict";
                         start = 0;
+                        if(u.shareFlag == 1){
+                            updateDateFrom = Date.parse(new Date('2017-04-08'));
+                        }
+                        else{
+                            updateDateFrom = Date.parse(new Date('2007-04-08'));
+                        }
                         console.log('Getting share update start:' + new Date().toLocaleString());
                         let url = `https://pan.baidu.com/wap/share/home?third=0&uk=${u.uk}&start=${start}`;
                         updateUserShare(url)
