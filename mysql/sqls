@@ -122,3 +122,76 @@ select concat(round(sum(data_length/1024/1024),2),'MB') as data_length_MB,concat
 //更新用户
 insert into users(username,followcount,fanscount,pubsharecount)
 select username,followcount,fanscount,pubsharecount from users_new
+
+//更新用户状态
+update users set users.updateTime = (select users_update.updateTime from users_update where users.uk = users_update.uk)
+WHERE EXISTS (select users_update.uk from users_update where users_update.uk = users.uk)
+
+//删除已有share
+delete from share_new where id in (SELECT id from (select a.id from share_new a,share b where a.uk = b.uk and a.shareid = b.shareid) xx)
+
+//删除share_update中的重复数据
+delete from share_update where id in (select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_update group by uk,shareid HAVING count(*)>1) x,share_update y
+where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b);
+
+
+//############更新share_new步骤########################
+//检查是否有重复数据
+select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_new group by uk,shareid HAVING count(*)>1) x,share_update y;
+where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b
+
+//如果有，删除重复数据
+delete from share_new (select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_new group by uk,shareid HAVING count(*)>1) x,share_update y where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b);
+
+//检查数据是否已经存在
+select count(*) from share a,share_new b where a.uk = b.uk and a.shareid = b.shareid;
+
+//如果有，删除已有数据
+delete from share_new where id in (SELECT id from (select a.id from share_new a,share b where a.uk = b.uk and a.shareid = b.shareid) xx);
+
+//插入share主表
+insert into share(category,feed_time,isdir,server_filename,size,saveTime,shareid,shorturl,title,uk,username) SELECT category,feed_time,isdir,server_filename,size,saveTime,shareid,shorturl,title,uk,username FROM share_new;
+
+//导出表
+
+//删除share_new表
+truncate table share_new;
+
+//############更新share_update步骤########################
+//检查是否有重复数据
+select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_update group by uk,shareid HAVING count(*)>1) x,share_update y;
+where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b
+
+//如果有，删除重复数据
+delete from share_update where id in (select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_update group by uk,shareid HAVING count(*)>1) x,share_update y
+where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b);
+
+//检查数据是否已经存在
+select count(*) from share a,share_update b where a.uk = b.uk and a.shareid = b.shareid;
+
+//如果有，删除已有数据
+delete from share_update where id in (SELECT id from (select a.id from share_update a,share b where a.uk = b.uk and a.shareid = b.shareid) xx);
+
+//插入share主表
+insert into share(category,feed_time,isdir,server_filename,size,saveTime,shareid,shorturl,title,uk,username) SELECT category,feed_time,isdir,server_filename,size,saveTime,shareid,shorturl,title,uk,username FROM share_update;
+
+//导出表
+
+//删除share_update表
+truncate table share_update;
+
+
+//##############更新user_new步骤###############
+//删除重复数据
+delete from users_new where id not in (select maxid from (select max(id) as maxid from users_new group by uk) b);
+
+//删除uses表中重复数据
+delete from users_new where id in (select id from (select a.id from users_new a,users b where a.uk = b.uk) x);
+
+//将users_new中的数据插入users表
+insert into users(username,followcount,fanscount,pubsharecount,uk)
+select username,followcount,fanscount,pubsharecount,uk from users_new;
+
+//#############sphinx indexer############
+//更新全部索引
+indexer -c /etc/sphinxsearch/sphinx-min.conf.dist --all --rotate
