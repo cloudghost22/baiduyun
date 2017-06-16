@@ -307,7 +307,7 @@ let albumUrlSave = function (urls) {
 //获取update的用户
 let getUpdateUser = function (offset = 0) {
     console.log('Getting the update user...');
-    let queryStr = `SELECT id,uk,shareFlag from users where updateTime is null order by pubshareCount desc LIMIT ${offset},5`;
+    let queryStr = `SELECT id,uk,shareFlag from users where updateTime is null and pubshareCount > 0 LIMIT ${offset},5`;
     //let queryStr = `SELECT id,uk from users_new where pubshareCount > 0 order by id  LIMIT ${offset},5`;
     console.log('Query string:'+queryStr);
     let deferred = q.defer();
@@ -358,6 +358,39 @@ let saveUpdateUsers = function (usersObj) {
     return deferred.promise;
 };
 
+//save the update users
+//获取update的用户
+let saveHot = function (obj) {
+    let deferred = q.defer();
+    let saveSql = 'INSERT INTO hotTop(title,rate,cover,type) VALUES ';
+    let updateStr = '';
+    for (let i of obj) {
+        let temp = '\'' + i.title + '\',\'' + i.rate + '\',\''+ i.cover + '\',\'' + i.type + '\'';
+        temp = '(' + temp + ')';
+        if (updateStr) {
+            updateStr += ',' + temp;
+        } else {
+            updateStr += temp;
+        }
+    }
+    saveSql += updateStr + ';';
+    console.log('hotTop save Sql' + saveSql);
+    pool.getConnection((err, conn) => {
+        "use strict";
+        conn.release();
+        if (err) deferred.reject(err);
+        conn.query(saveSql, (err, result) => {
+            if (err) {
+                console.log('Saving hotTop error,sql is:' + saveSql);
+                deferred.resolve();
+            } else {
+                deferred.resolve(result.affectedRows);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 module.exports.getUser = getUser;
 module.exports.saveShare = saveShare;
 module.exports.setShareFlag = setShareFlag;
@@ -370,3 +403,4 @@ module.exports.updateErrorUrls = updateErrorUrls;
 module.exports.albumUrlSave = albumUrlSave;
 module.exports.getUpdateUser = getUpdateUser;
 module.exports.saveUpdateUsers = saveUpdateUsers;
+module.exports.saveHot = saveHot;

@@ -137,7 +137,7 @@ where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b);
 
 //############更新share_new步骤########################
 //检查是否有重复数据
-select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_new group by uk,shareid HAVING count(*)>1) x,share_update y;
+select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_new group by uk,shareid HAVING count(*)>1) x,share_update y
 where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b
 
 //如果有，删除重复数据
@@ -191,6 +191,20 @@ delete from users_new where id in (select id from (select a.id from users_new a,
 //将users_new中的数据插入users表
 insert into users(username,followcount,fanscount,pubsharecount,uk)
 select username,followcount,fanscount,pubsharecount,uk from users_new;
+
+//##############更新user_update步骤###############
+//删除重复的users_update数据
+delete from users_update where id not in (select maxid from (select max(id) as maxid from users_update group by uk) b);
+
+//更新用户更新时间
+update users set users.updateTime = (select users_update.updateTime from users_update where users.uk = users_update.uk)
+WHERE EXISTS (select users_update.uk from users_update where users_update.uk = users.uk);
+//更新总数
+update users set users.pubshareCount = (select users_update.totalCount from users_update where users.uk = users_update.uk)
+WHERE EXISTS (select users_update.uk from users_update where users_update.uk = users.uk);
+//更新已更新数量
+update users set users.updateNumbers = (select users_update.updateNumber from users_update where users.uk = users_update.uk)
+WHERE EXISTS (select users_update.uk from users_update where users_update.uk = users.uk);
 
 //#############sphinx indexer############
 //更新全部索引
