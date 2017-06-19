@@ -134,7 +134,7 @@ WapShareUpdateWorker.prototype = {
         getUpdateUser(updateNumber)
             .then((user) => {
                 //console.log(user);
-                updateNumber += 5;
+                updateNumber += 20;
                 if (user == '') {
                     console.log('Get users share all done.Wating 10 min');
                     // sleeptime(300000);

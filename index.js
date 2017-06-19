@@ -32,36 +32,34 @@ let getHotFromDouban = require('./crawler/getHot').getHotFromDouban;
 let saveHot = require('./crawler/save').saveHot;
 let getHotFromBaidu = require('./crawler/getHot').getHotFromBaidu;
 
-getHotFromBaidu();
+getHotFromBaidu(5).then((res)=>{
+    saveHot(res);
+});
 
-/*
-/!*getHotFromDouban('tv')
+/*getHotFromDouban('tv')
     .then((res)=>{
       saveHot(res);
-    });*!/
+    });*/
 
 
 //set the time
-let setTime = 5000 + Math.round(Math.random() * 1000);
+// let setTime = 5000 + Math.round(Math.random() * 1000);
 
 //let wapShareWorker = new WapShareWorker();
-let followWorker = new FollowWorker();
+// let followWorker = new FollowWorker();
 // let fansWorker = new FansWorker();
 
-// wapShareWorker.init();
+//wapShareWorker.init();
 
-
-followWorker.init();
+//
+// followWorker.init();
 
 //fansWorker.init();
-*/
 
 
-/*
-let wapShareUpdateWorker = new WapShareUpdateWorker();
-wapShareUpdateWorker.init();
+// let wapShareUpdateWorker = new WapShareUpdateWorker();
+// wapShareUpdateWorker.init();
 // getWapShareUpdate('https://pan.baidu.com/wap/share/home?uk=1426671309&start=0').then(res=>console.log(res)).catch(err=>console.log(err));
-*/
 
 /*//####################################################################################################
 let ErrorUrls = function () {
