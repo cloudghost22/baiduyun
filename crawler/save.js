@@ -359,18 +359,19 @@ let saveUpdateUsers = function (usersObj) {
 };
 
 //save the update users
-//获取update的用户
-let saveHot = function (obj) {
+let saveHot = function (objs) {
     let deferred = q.defer();
     let saveSql = 'INSERT INTO hotTop(title,author,type) VALUES ';
     let updateStr = '';
-    for (let i of obj) {
-        let temp = '\'' + i.title + '\',\'' + i.author + '\',\'' + i.type + '\'';
-        temp = '(' + temp + ')';
-        if (updateStr) {
-            updateStr += ',' + temp;
-        } else {
-            updateStr += temp;
+    for (let obj of objs) {
+        for(let i of obj){
+            let temp = '\'' + i.title + '\',\'' + i.author + '\',\'' + i.type + '\'';
+            temp = '(' + temp + ')';
+            if (updateStr) {
+                updateStr += ',' + temp;
+            } else {
+                updateStr += temp;
+            }
         }
     }
     saveSql += updateStr + ';';

@@ -160,11 +160,11 @@ truncate table share_new;
 //############更新share_update步骤########################
 //检查是否有重复数据
 select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_update group by uk,shareid HAVING count(*)>1) x,share_update y
-where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b
+where x.uk = y.uk and x.shareid = y.shareid) xx group by uk,shareid) b
 
 //如果有，删除重复数据
 delete from share_update where id in (select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_update group by uk,shareid HAVING count(*)>1) x,share_update y
-where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b);
+where x.uk = y.uk and x.shareid = y.shareid) xx group by uk,shareid) b);
 
 //检查数据是否已经存在
 select count(*) from share a,share_update b where a.uk = b.uk and a.shareid = b.shareid;
@@ -207,7 +207,8 @@ update users set users.updateNumbers = (select users_update.updateNumber from us
 WHERE EXISTS (select users_update.uk from users_update where users_update.uk = users.uk);
 
 //更新shareflag = 1
-
+update users set users.shareFlag = 1
+WHERE id in (select x.id from (select y.id from users y where y.updateTime is not null and y.shareFlag = 0) x)
 
 //#############sphinx indexer############
 //更新全部索引

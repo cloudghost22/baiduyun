@@ -32,9 +32,18 @@ let getHotFromDouban = require('./crawler/getHot').getHotFromDouban;
 let saveHot = require('./crawler/save').saveHot;
 let getHotFromBaidu = require('./crawler/getHot').getHotFromBaidu;
 
-getHotFromBaidu(5).then((res)=>{
-    saveHot(res);
-});
+// getHotFromBaidu(0).then((res)=>{
+//     saveHot(res);
+// });
+
+/*let getHotAll = function () {
+    return q.all([getHotFromBaidu(0),getHotFromBaidu(1),getHotFromBaidu(2),getHotFromBaidu(3),getHotFromBaidu(4),getHotFromBaidu(5)])
+        .then(res=>{
+            saveHot(res);
+        });
+};
+
+getHotAll();*/
 
 /*getHotFromDouban('tv')
     .then((res)=>{
@@ -46,19 +55,19 @@ getHotFromBaidu(5).then((res)=>{
 // let setTime = 5000 + Math.round(Math.random() * 1000);
 
 //let wapShareWorker = new WapShareWorker();
-// let followWorker = new FollowWorker();
+ let followWorker = new FollowWorker();
 // let fansWorker = new FansWorker();
 
 //wapShareWorker.init();
 
 //
-// followWorker.init();
+ followWorker.init();
 
 //fansWorker.init();
 
 
-// let wapShareUpdateWorker = new WapShareUpdateWorker();
-// wapShareUpdateWorker.init();
+let wapShareUpdateWorker = new WapShareUpdateWorker();
+wapShareUpdateWorker.init();
 // getWapShareUpdate('https://pan.baidu.com/wap/share/home?uk=1426671309&start=0').then(res=>console.log(res)).catch(err=>console.log(err));
 
 /*//####################################################################################################

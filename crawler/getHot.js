@@ -69,7 +69,7 @@ let parseHot = function (json, type) {
 let getHotFromBaidu = function (type) {
     //xiaosou movie tv zongyi cartoon music
     let deferred = q.defer();
-    let arr = ['xiaosou', 'movie', 'tv', 'zongyi', 'cartoon', 'music'];
+    let arr = ['xiaoshuo', 'movie', 'tv', 'zongyi', 'cartoon', 'music'];
     let typeArr = [];
     typeArr.push('http://top.baidu.com/buzz?b=7&c=10&fr=topcategory_c10');
     typeArr.push('http://top.baidu.com/buzz?b=26&c=1&fr=topcategory_c1');
