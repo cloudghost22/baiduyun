@@ -13,7 +13,7 @@ let albumUrlSave = require('./save').albumUrlSave;
 let errorUrl = require('./save').errorUrl;
 
 //set the time
-let setTime = 1000 + Math.round(Math.random() * 500);
+let setTime = 500 + Math.round(Math.random() * 500);
 //###########http header#########
 let options = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -29,11 +29,11 @@ let updateShareArr = [];
 let updateUserArr = [];
 let errorUrlsArr = [];
 let album = [];
-// let updateNumber = 115674;
 let updateNumber = 0;
 let start = 0;
 let updateUserNumber = 0;
 let updateDateFrom = Date.parse(new Date('2007-04-28'));
+let getUpdateFlag = 0;
 
 let getWapShareUpdate = function (url) {
     let deferred = q.defer();
@@ -61,7 +61,7 @@ let getWapShareUpdate = function (url) {
                 temp = temp.replace(/ /g, '');
                 temp = temp.substring(temp.indexOf('{"'), temp.indexOf('};') + 1);
                 temp = eval("(" + temp + ")");
-                deferred.resolve(parseWapShareUpdateJson(temp.feedata));
+                deferred.resolve(parseWapShareUpdateJson(temp.feedata,temp.uinfo.uk));
             } catch (e) {
                 //console.log(e);
                 console.log('Getting wap share update error,url is:' + url);
@@ -78,49 +78,59 @@ let getWapShareUpdate = function (url) {
 };
 
 //解析分享json
-let parseWapShareUpdateJson = function (json) {
-    let tempUk = json.records[0].uk;
-    let flagUK = false;
-    if (tempUk) {
-        for (let i of updateUserArr) {
-            if (i.uk == tempUk) {
-                flagUK = true;
-                break;
+let parseWapShareUpdateJson = function (json,uk='') {
+    // console.log(json);
+    if(json.total_count > 0){
+        let tempUk = json.records[0].uk;
+        let flagUK = false;
+        if (tempUk) {
+            for (let i of updateUserArr) {
+                if (i.uk == tempUk) {
+                    flagUK = true;
+                    break;
+                }
             }
         }
-    }
-    if (!flagUK) {
+        if (!flagUK) {
+            let updateUserObj = new Object();
+            updateUserObj.uk = tempUk;
+            updateUserObj.totalCount = json.total_count;
+            updateUserArr.push(updateUserObj);
+        }
+        let userShare = [];
+        let shareObj = {};
+        for (let i = 0; i < json.records.length; i++) {
+            if (json.records[i].feed_type == 'share') {
+                shareObj.category = json.records[i].category;
+                shareObj.feed_time = json.records[i].feed_time;
+                if (json.records[i].filelist[0]) {
+                    shareObj.isdir = json.records[i].filelist[0].isdir;
+                    shareObj.server_filename = json.records[i].filelist[0].server_filename;
+                    shareObj.size = json.records[i].filelist[0].size;
+                }
+                // shareObj.saveTime = json.records[i].filelist[0].time_stamp;
+                shareObj.shareid = json.records[i].shareid;
+                // shareObj.shorturl = json.records[i].shorturl;
+                shareObj.title = json.records[i].title;
+                shareObj.uk = json.records[i].uk;
+                shareObj.username = json.records[i].username;
+                userShare.push(shareObj);
+                shareObj = {};
+            } else if (json.records[i].feed_type == 'album') {
+                let albumUrl = `https://pan.baidu.com/wap/album/info?uk=${json.records[i].uk}&third=0&album_id=${json.records[i].album_id}`;
+                albumUrlSave(new Array(albumUrl));
+            }
+        }
+        // console.log(userShare);
+        return userShare;
+    }else {
         let updateUserObj = new Object();
-        updateUserObj.uk = tempUk;
-        updateUserObj.totalCount = json.total_count;
+        updateUserObj.uk = uk;
+        updateUserObj.totalCount = 0;
         updateUserArr.push(updateUserObj);
+        return [];
     }
-    let userShare = [];
-    let shareObj = {};
-    for (let i = 0; i < json.records.length; i++) {
-        if (json.records[i].feed_type == 'share') {
-            shareObj.category = json.records[i].category;
-            shareObj.feed_time = json.records[i].feed_time;
-            if (json.records[i].filelist[0]) {
-                shareObj.isdir = json.records[i].filelist[0].isdir;
-                shareObj.server_filename = json.records[i].filelist[0].server_filename;
-                shareObj.size = json.records[i].filelist[0].size;
-            }
-            // shareObj.saveTime = json.records[i].filelist[0].time_stamp;
-            shareObj.shareid = json.records[i].shareid;
-            // shareObj.shorturl = json.records[i].shorturl;
-            shareObj.title = json.records[i].title;
-            shareObj.uk = json.records[i].uk;
-            shareObj.username = json.records[i].username;
-            userShare.push(shareObj);
-            shareObj = {};
-        } else if (json.records[i].feed_type == 'album') {
-            let albumUrl = `https://pan.baidu.com/wap/album/info?uk=${json.records[i].uk}&third=0&album_id=${json.records[i].album_id}`;
-            albumUrlSave(new Array(albumUrl));
-        }
-    }
-    // console.log(userShare);
-    return userShare;
+
 };
 
 //getting the wap update
@@ -131,16 +141,19 @@ WapShareUpdateWorker.prototype = {
     init: function () {
         let deferred = q.defer();
         //获取用户
-        getUpdateUser(updateNumber)
+        getUpdateUser(updateNumber,getUpdateFlag)
             .then((user) => {
                 //console.log(user);
                 updateNumber += 20;
                 if (user == '') {
-                    console.log('Get users share all done.Wating 10 min');
+                    // console.log('Get users share all done.Wating 10 min');
                     // sleeptime(300000);
+                    console.log('Get new users share all done.Old users update begin...');
+                    getUpdateFlag = 1;
+                    updateNumber = 0;
                     setTimeout(() => {
                         deferred.resolve(this.init());
-                    }, 600000);
+                    }, 1000);
                 }
                 if (user[0].pubshareCount == 0) {
                     //该用户无分享数据，递归
@@ -157,8 +170,10 @@ WapShareUpdateWorker.prototype = {
                     async.mapLimit(usersArr, 1, (u, callback) => {
                         "use strict";
                         start = 0;
-                        if(u.shareFlag == 1){
+                        if(u.shareFlag == 1 && u.updateTime == null){
                             updateDateFrom = Date.parse(new Date('2017-04-08'));
+                        }else if(u.shareFlag == 1 && u.updateTime != null){
+                            updateDateFrom = Date.parse(u.updateTime);
                         }
                         else{
                             updateDateFrom = Date.parse(new Date('2007-04-08'));

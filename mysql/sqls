@@ -185,8 +185,22 @@ truncate table share_update;
 //删除重复数据
 delete from users_new where id not in (select maxid from (select max(id) as maxid from users_new group by uk) b);
 
+//更新fanscount
+update users set users.fansCount = (select users_new.fansCount from users_new where users.uk = users_new.uk)
+WHERE EXISTS (select users_new.uk from users_new where users_new .uk = users.uk);
+
+//更新followcount
+update users set users.followCount = (select users_new.followCount from users_new where users.uk = users_new.uk)
+WHERE EXISTS (select users_new.uk from users_new where users_new .uk = users.uk);
+
+//更新sharecount
+update users set users.pubshareCount = (select users_new.pubshareCount from users_new where users.uk = users_new.uk)
+WHERE EXISTS (select users_new.uk from users_new where users_new .uk = users.uk);
+
 //删除uses表中重复数据
 delete from users_new where id in (select id from (select a.id from users_new a,users b where a.uk = b.uk) x);
+
+select count(*) from users_new;
 
 //将users_new中的数据插入users表
 insert into users(username,followcount,fanscount,pubsharecount,uk)

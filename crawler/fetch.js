@@ -348,7 +348,8 @@ let getFans = function (url) {
     console.log('Getting fans url is:'+url);
     let deferred = q.defer();
     let uk = url.slice(url.indexOf('query_uk=') + 9, url.indexOf('&limit'));
-    //options.Referer = `https://pan.baidu.com/pcloud/friendpage?type=fans&uk=${uk}&self=0`;
+    options.Referer = `https://pan.baidu.com/pcloud/friendpage?type=fans&uk=${uk}&self=0`;
+    options.Connection = 'keep-alive';
     superagent
         .get(url)
         .set(options)
@@ -359,7 +360,7 @@ let getFans = function (url) {
                 let json = JSON.parse(res.text);
                 let jsonTemp = parseFansJson(json);
                 if (jsonTemp == '1'){
-                    deferred.resolve('err');
+                    deferred.resolve('erroruser');
                 }
                 else if(jsonTemp == '-55') {
                     console.log(`${url} request error.`);
