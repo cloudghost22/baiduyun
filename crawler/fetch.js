@@ -450,7 +450,7 @@ let parseFansJson = function (json) {
         return userFans;
     } else {
         console.log(json.errno);
-        return 'err';
+        return json.errno;
     }
 };
 

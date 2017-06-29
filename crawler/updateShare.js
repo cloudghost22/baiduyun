@@ -180,12 +180,17 @@ WapShareUpdateWorker.prototype = {
                         }
                         console.log('Getting share update start:' + new Date().toLocaleString());
                         let url = `https://pan.baidu.com/wap/share/home?third=0&uk=${u.uk}&start=${start}`;
-                        updateUserShare(url)
-                            .then(result => {
-                                // console.log(result);
-                                callback(null, null);
-                            })
-                            .catch(err => callback(err, null));
+                        if(getUpdateFlag == 1 && u.updateTime == null){
+                            console.log(`${u.uk} already updated.`);
+                            callback(null, null);
+                        }else{
+                            updateUserShare(url)
+                                .then(result => {
+                                    // console.log(result);
+                                    callback(null, null);
+                                })
+                                .catch(err => callback(err, null));
+                        }
                     }, (err, result) => {
                         "use strict";
                         if (err) throw err;
