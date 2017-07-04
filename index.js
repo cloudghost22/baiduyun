@@ -56,11 +56,11 @@ getHotAll();*/
 
 let followWorker = new FollowWorker();
 let fansWorker = new FansWorker();
-followWorker.init();
+// followWorker.init();
 fansWorker.init();
 
 let wapShareUpdateWorker = new WapShareUpdateWorker();
-wapShareUpdateWorker.init();
+// wapShareUpdateWorker.init();
 
 
 // getWapShareUpdate('https://pan.baidu.com/wap/share/home?third=0&uk=4289615308&start=0').then(res=>console.log(res)).catch(err=>console.log(err));

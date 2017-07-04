@@ -312,7 +312,7 @@ let getUpdateUser = function (offset = 0,flag = 0) {
         queryStr = `SELECT id,uk,shareFlag,updateTime from users where updateTime is null and pubshareCount > 0 LIMIT ${offset},20`;
     }
     else{
-        queryStr = `SELECT id,uk,shareFlag,updateTime from users order by pubshareCount desc limit ${offset},20;`;
+        queryStr = `SELECT id,uk,shareFlag,updateTime from users order by updateNumbers desc limit ${offset},20;`;
     }
     //let queryStr = `SELECT id,uk from users_new where pubshareCount > 0 order by id  LIMIT ${offset},5`;
     console.log('Query string:'+ queryStr);
