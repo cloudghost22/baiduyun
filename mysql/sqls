@@ -137,11 +137,11 @@ where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b);
 
 //############更新share_new步骤########################
 //检查是否有重复数据
-select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_new group by uk,shareid HAVING count(*)>1) x,share_update y
+select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_new group by uk,shareid HAVING count(*)>1) x,share_new y
 where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b
 
 //如果有，删除重复数据
-delete from share_new (select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_new group by uk,shareid HAVING count(*)>1) x,share_update y where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b);
+delete from share_new (select maxid from (select min(id) as maxid from (select y.id,y.uk,y.shareid from (SELECT uk,shareid,count(*) from share_new group by uk,shareid HAVING count(*)>1) x,share_new y where x.uk = y.uk and x.shareid = y.shareid) x group by uk,shareid) b);
 
 //检查数据是否已经存在
 select count(*) from share a,share_new b where a.uk = b.uk and a.shareid = b.shareid;

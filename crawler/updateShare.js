@@ -13,7 +13,7 @@ let albumUrlSave = require('./save').albumUrlSave;
 let errorUrl = require('./save').errorUrl;
 
 //set the time
-let setTime = 500 + Math.round(Math.random() * 500);
+let setTime = 0 + Math.round(Math.random() * 500);
 //###########http header#########
 let options = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',

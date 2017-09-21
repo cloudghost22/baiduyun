@@ -398,6 +398,95 @@ let saveHot = function (objs) {
     return deferred.promise;
 };
 
+//get album link
+let getAlbumUrls = function () {
+    let deferred = q.defer();
+    let sql = `select id,url from album where flag = 0 ORDER BY id limit 10;`;
+    // let sql = `select id,url from album where id = 10;`;
+    pool.getConnection((err, conn) => {
+        "use strict";
+        conn.release();
+        if (err) deferred.reject(err);
+        conn.query(sql, (err, result) => {
+            if (err) {
+                console.log('getAlbumUrls error:' + sql);
+                deferred.resolve();
+            } else {
+                deferred.resolve(result);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
+let saveAlbumShare = function (data,table = 'share_new') {
+    // console.log(data);
+    let deferred = q.defer();
+    let saveSql = `INSERT ${table}(category,feed_time,isdir,server_filename,size,saveTime,shareid,title,uk,username,shorturl) VALUES `;
+    let updateStr = '';
+    let _saveTime = (new Date()).valueOf();
+    for (let i of data) {
+        if (i && typeof(i.server_filename) != 'undefined') {
+            let temp = '\'' + i.category + '\',\'' + i.feed_time + '\',\'' ;
+            if(i.server_filename){
+                temp += i.isdir + '\',\'' + (i.server_filename.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.size + '\',\'';
+            }else {
+                temp += null + '\',\'' + null + '\',\'' + null + '\',\'';
+            }
+
+            temp += _saveTime + '\',\'' + i.shareid + '\',\'' + (i.title.replace(/\\/g, '').replace(/\'/g, '')).substr(0, 512) + '\',\'' + i.uk + '\',\'' + i.username.replace(/\\/g, '').replace(/\'/g, '') + '\',\''+i.shorturl+'\'';
+            temp = '(' + temp + ')';
+            // console.log(temp);
+            if (updateStr) {
+                updateStr += ',' + temp;
+            } else {
+                updateStr += temp;
+            }
+        }
+    }
+    saveSql += updateStr + ';';
+    // console.log(saveSql);
+    pool.getConnection((err, conn) => {
+        "use strict";
+        conn.release();
+        if (err) deferred.reject(err);
+        conn.query(saveSql, (err, result) => {
+            if (err) {
+                console.log('Saving album share error,sql is:' + saveSql);
+                deferred.resolve();
+            } else {
+                deferred.resolve(result.affectedRows);
+            }
+
+        });
+    });
+    return deferred.promise;
+};
+
+let updateAlbumStatus = function (IDs) {
+    let deferred = q.defer();
+    let idArr = '';
+    for (let i of IDs) {
+        idArr += (idArr.length > 0 ? ',' : '') + i;
+    }
+    let sql = `update album set flag = 1 where ID in (${idArr});`;
+    // console.log(sql);
+    pool.getConnection((err, conn) => {
+        "use strict";
+        conn.release();
+        if (err) deferred.reject(err);
+        conn.query(sql, (err, result) => {
+            if (err) {
+                console.log('updateAlbumStatus error:' + err);
+                deferred.resolve();
+            } else {
+                deferred.resolve(result);
+            }
+        });
+    });
+    return deferred.promise;
+};
+
 module.exports.getUser = getUser;
 module.exports.saveShare = saveShare;
 module.exports.setShareFlag = setShareFlag;
@@ -411,3 +500,6 @@ module.exports.albumUrlSave = albumUrlSave;
 module.exports.getUpdateUser = getUpdateUser;
 module.exports.saveUpdateUsers = saveUpdateUsers;
 module.exports.saveHot = saveHot;
+module.exports.getAlbumUrls = getAlbumUrls;
+module.exports.saveAlbumShare = saveAlbumShare;
+module.exports.updateAlbumStatus = updateAlbumStatus;

@@ -25,12 +25,23 @@ let getShareTasks = require('./crawler/fetch').getShareTasks;
 let getFansTasks = require('./crawler/fetch').getFansTasks;
 let saveWapShare = require('./crawler/save').saveWapShare;
 let getWapShare = require('./crawler/wapFetch').getWapShare;
-let getWapAlbumShare = require('./crawler/wapFetch').getWapAlbumShare;
+let getWapAlbumShare = require('./crawler/albumFetch').getWapAlbumShare;
 let WapShareUpdateWorker = require('./crawler/updateShare').WapShareUpdateWorker;
 let getWapShareUpdate = require('./crawler/updateShare').getWapShareUpdate;
 let getHotFromDouban = require('./crawler/getHot').getHotFromDouban;
 let saveHot = require('./crawler/save').saveHot;
 let getHotFromBaidu = require('./crawler/getHot').getHotFromBaidu;
+let AlbumWorker = require('./crawler/albumFetch').AlbumWorker;
+
+// getWapAlbumShare('https://pan.baidu.com/wap/album/info?uk=85105418&third=0&album_id=5388203490541358144')
+// .then(data=>{
+//     // console.log(data);
+//     console.log('ok');
+// });
+
+let albumWorker = new AlbumWorker();
+
+albumWorker.init();
 
 // getHotFromBaidu(0).then((res)=>{
 //     saveHot(res);
@@ -54,13 +65,13 @@ getHotAll();*/
 //set the time
 // let setTime = 5000 + Math.round(Math.random() * 1000);
 
-let followWorker = new FollowWorker();
-let fansWorker = new FansWorker();
-followWorker.init();
-fansWorker.init();
+// let followWorker = new FollowWorker();
+// let fansWorker = new FansWorker();
+// followWorker.init();
+// fansWorker.init();
 
-let wapShareUpdateWorker = new WapShareUpdateWorker();
-wapShareUpdateWorker.init();
+// let wapShareUpdateWorker = new WapShareUpdateWorker();
+// wapShareUpdateWorker.init();
 
 
 // getWapShareUpdate('https://pan.baidu.com/wap/share/home?third=0&uk=4289615308&start=0').then(res=>console.log(res)).catch(err=>console.log(err));
